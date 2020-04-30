@@ -3,7 +3,6 @@ import {
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
 import assert from 'assert';
-import { Visitor, VisitorOptions } from 'esrecurse';
 import { Definition, ParameterDefinition } from './Definition';
 import {
   PatternVisitor,
@@ -14,6 +13,7 @@ import { ReferenceFlag, ReferenceImplicitGlobal } from './Reference';
 import { Scope } from './scope';
 import { ScopeManager } from './ScopeManager';
 import { VariableType } from './VariableType';
+import { Visitor, VisitorOptions } from './Visitor';
 import { FunctionScope } from './scope/FunctionScope';
 
 /**
@@ -461,7 +461,7 @@ class Referencer extends Visitor {
   Program(node: TSESTree.Program): void {
     this.scopeManager.__nestGlobalScope(node);
 
-    if (this.scopeManager.__isNodejsScope()) {
+    if (this.scopeManager.__isGlobalReturn()) {
       // Force strictness of GlobalScope to false when using node.js scope.
       this.currentScope(true).isStrict = false;
       this.scopeManager.__nestFunctionScope(node, false);
@@ -548,16 +548,6 @@ class Referencer extends Visitor {
   }
 
   CallExpression(node: TSESTree.CallExpression): void {
-    // Check this is direct call to eval
-    if (
-      !this.scopeManager.__ignoreEval() &&
-      node.callee.type === AST_NODE_TYPES.Identifier &&
-      node.callee.name === 'eval'
-    ) {
-      // NOTE: This should be `variableScope`. Since direct eval call always creates Lexical environment and
-      // let / const should be enclosed into it. Only VariableDeclaration affects on the caller's environment.
-      this.currentScope(true).variableScope.__detectEval();
-    }
     this.visitChildren(node);
   }
 
@@ -686,4 +676,4 @@ class Referencer extends Visitor {
   }
 }
 
-export { Referencer };
+export { Referencer, ReferencerOptions };

@@ -15,7 +15,7 @@ class WithScope extends ScopeBase {
     super(scopeManager, ScopeType.with, upperScope, block, false);
   }
   __close(scopeManager: ScopeManager): ReturnType<ScopeBase['__close']> {
-    if (this.__shouldStaticallyClose(scopeManager)) {
+    if (this.__shouldStaticallyClose()) {
       return super.__close(scopeManager);
     }
     for (let i = 0, iz = this.__left!.length; i < iz; ++i) {

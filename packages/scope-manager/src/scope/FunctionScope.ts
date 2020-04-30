@@ -80,7 +80,7 @@ class FunctionScope extends ScopeBase {
   //         console.log(a)
   //     }
   __isValidResolution(ref: Reference, variable: Variable): boolean {
-    // If `options.nodejsScope` is true, `this.block` becomes a Program node.
+    // If `options.gloablReturn` is true, `this.block` becomes a Program node.
     if (this.block.type === AST_NODE_TYPES.Program) {
       return true;
     }

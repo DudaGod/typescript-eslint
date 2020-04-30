@@ -14,9 +14,7 @@ import { TSESTree } from '@typescript-eslint/experimental-utils';
 import { Variable } from './variable';
 
 interface ScopeManagerOptions {
-  optimistic?: boolean;
-  ignoreEval?: boolean;
-  nodejsScope?: boolean;
+  gloablReturn?: boolean;
   sourceType?: 'module' | 'script';
   impliedStrict?: boolean;
   ecmaVersion?: number;
@@ -39,16 +37,8 @@ class ScopeManager {
     this.__declaredVariables = new WeakMap();
   }
 
-  __isOptimistic(): boolean {
-    return this.__options.optimistic === true;
-  }
-
-  __ignoreEval(): boolean {
-    return this.__options.ignoreEval === true;
-  }
-
-  __isNodejsScope(): boolean {
-    return this.__options.nodejsScope === true;
+  __isGlobalReturn(): boolean {
+    return this.__options.gloablReturn === true;
   }
 
   isModule(): boolean {

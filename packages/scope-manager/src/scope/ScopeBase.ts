@@ -140,16 +140,10 @@ class ScopeBase {
    */
   public readonly childScopes: ScopeBase[] = [];
   /**
-   * Whether this is a scope that contains an 'eval()' invocation.
-   */
-  public directCallToEvalScope = false;
-  /**
    * Generally, through the lexical scoping of JS you can always know
    * which variable an identifier in the source code refers to. There are
    * a few exceptions to this rule. With 'global' and 'with' scopes you
    * can only decide at runtime which variable a reference refers to.
-   * Moreover, if 'eval()' is used in a scope, it might introduce new
-   * bindings in this or its parent scopes.
    * All those scopes are considered 'dynamic'.
    */
   public dynamic: boolean;
@@ -241,8 +235,8 @@ class ScopeBase {
     registerScope(scopeManager, this);
   }
 
-  __shouldStaticallyClose(scopeManager: ScopeManager): boolean {
-    return !this.dynamic || scopeManager.__isOptimistic();
+  __shouldStaticallyClose(): boolean {
+    return !this.dynamic;
   }
 
   __shouldStaticallyCloseForGlobal(ref: Reference): boolean {
@@ -286,10 +280,10 @@ class ScopeBase {
     }
   };
 
-  __close(scopeManager: ScopeManager): Scopes | null {
+  __close(_scopeManager: ScopeManager): Scopes | null {
     let closeRef;
 
-    if (this.__shouldStaticallyClose(scopeManager)) {
+    if (this.__shouldStaticallyClose()) {
       closeRef = this.__staticCloseRef;
     } else if (this.type !== 'global') {
       closeRef = this.__dynamicCloseRef;
@@ -427,17 +421,6 @@ class ScopeBase {
 
     this.references.push(ref);
     this.__left?.push(ref);
-  }
-
-  __detectEval(): void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    let current: ScopeBase | null = this;
-
-    this.directCallToEvalScope = true;
-    do {
-      current.dynamic = true;
-      current = current.upper;
-    } while (current);
   }
 
   __detectThis(): void {

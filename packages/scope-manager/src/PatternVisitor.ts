@@ -1,6 +1,8 @@
-import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Syntax } from 'estraverse';
-import { Visitor, VisitorOptions } from 'esrecurse';
+import {
+  TSESTree,
+  AST_NODE_TYPES,
+} from '@typescript-eslint/experimental-utils';
+import { Visitor, VisitorOptions } from './Visitor';
 
 type PatternVisitorCallback = (
   pattern: TSESTree.Identifier,
@@ -17,12 +19,12 @@ class PatternVisitor extends Visitor {
     const nodeType = node.type;
 
     return (
-      nodeType === Syntax.Identifier ||
-      nodeType === Syntax.ObjectPattern ||
-      nodeType === Syntax.ArrayPattern ||
-      nodeType === Syntax.SpreadElement ||
-      nodeType === Syntax.RestElement ||
-      nodeType === Syntax.AssignmentPattern
+      nodeType === AST_NODE_TYPES.Identifier ||
+      nodeType === AST_NODE_TYPES.ObjectPattern ||
+      nodeType === AST_NODE_TYPES.ArrayPattern ||
+      nodeType === AST_NODE_TYPES.SpreadElement ||
+      nodeType === AST_NODE_TYPES.RestElement ||
+      nodeType === AST_NODE_TYPES.AssignmentPattern
     );
   }
 
