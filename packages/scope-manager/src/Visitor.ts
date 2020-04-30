@@ -8,15 +8,15 @@ interface VisitorKeys {
 interface VisitorOptions {
   processRightHandNodes?: boolean;
   childVisitorKeys?: VisitorKeys | null;
-  fallback?: 'iteration' | FallbackFn;
+  fallback?: 'iteration' | 'none' | FallbackFn;
 }
 
-declare class VisitorType {
+declare class ESRecurseVisitorType {
   __fallback: FallbackFn;
-  __visitor: VisitorType;
+  __visitor: ESRecurseVisitorType;
   __childVisitorKeys: VisitorKeys;
 
-  constructor(visitor: VisitorType | null, options: VisitorOptions);
+  constructor(visitor: ESRecurseVisitorType | null, options: VisitorOptions);
 
   /**
    * Default method for visiting children.
@@ -30,6 +30,6 @@ declare class VisitorType {
    */
   visit(node: TSESTree.Node | null): void;
 }
-const Visitor = ESRecurseVisitor as typeof VisitorType;
+class Visitor extends (ESRecurseVisitor as typeof ESRecurseVisitorType) {}
 
 export { Visitor, VisitorOptions, VisitorKeys };

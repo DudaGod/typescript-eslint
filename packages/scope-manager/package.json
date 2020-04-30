@@ -39,6 +39,9 @@
     "@typescript-eslint/experimental-utils": "2.29.0",
     "esrecurse": "^4.2.1"
   },
+  "devDependencies": {
+    "@typescript-eslint/parser": "2.29.0"
+  },
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/typescript-eslint"

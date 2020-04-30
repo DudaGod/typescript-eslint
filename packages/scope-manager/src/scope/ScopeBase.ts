@@ -394,7 +394,7 @@ class ScopeBase {
   __referencing(
     node: TSESTree.Node,
     assign?: ReferenceFlag,
-    writeExpr?: TSESTree.Node | null,
+    writeExpr?: TSESTree.Expression | null,
     maybeImplicitGlobal?: ReferenceImplicitGlobal | null,
     partial?: boolean,
     init?: boolean,

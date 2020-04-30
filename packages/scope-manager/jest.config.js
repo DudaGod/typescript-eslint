@@ -8,9 +8,12 @@ module.exports = {
   },
   testEnvironment: 'node',
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    [/^.+\.tsx?$/.source]: 'ts-jest',
   },
-  testRegex: './tests/.+\\.test\\.ts$',
+  testRegex: [
+    /.\/tests\/.+\.test\.ts$/.source,
+    /.\/tests\/eslint-scope\/[^/]+\.test\.ts$/.source,
+  ],
   collectCoverage: false,
   collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

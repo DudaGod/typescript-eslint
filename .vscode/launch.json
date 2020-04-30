@@ -83,6 +83,22 @@
       "sourceMaps": true,
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run currently opened scope-manager test",
+      "cwd": "${workspaceFolder}/packages/scope-manager/",
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+      "args": [
+        "--runInBand",
+        "--no-cache",
+        "--no-coverage",
+        "${fileBasename}"
+      ],
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
   ]
 }
