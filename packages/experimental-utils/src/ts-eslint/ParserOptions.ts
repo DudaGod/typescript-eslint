@@ -16,8 +16,6 @@ type EcmaVersion =
   | 2019
   | 2020;
 
-type SourceType = 'script' | 'module';
-
 interface ParserOptions {
   comment?: boolean;
   ecmaFeatures?: {
@@ -36,11 +34,11 @@ interface ParserOptions {
   project?: string | string[];
   projectFolderIgnoreList?: (string | RegExp)[];
   range?: boolean;
-  sourceType?: SourceType;
+  sourceType?: 'script' | 'module';
   tokens?: boolean;
   tsconfigRootDir?: string;
   useJSXTextNode?: boolean;
   warnOnUnsupportedTypeScriptVersion?: boolean;
 }
 
-export { EcmaVersion, ParserOptions, SourceType };
+export { EcmaVersion, ParserOptions };

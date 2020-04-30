@@ -15,9 +15,9 @@ interface Options {
   impliedStrict?: boolean;
 
   /**
-   * the source type of the script. one of 'script' and 'module'
+   * the source type of the script.
    */
-  sourceType?: TSESLint.SourceType;
+  sourceType?: 'script' | 'module';
 
   /**
    * which ECMAScript version is considered
