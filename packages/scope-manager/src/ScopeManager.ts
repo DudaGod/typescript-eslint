@@ -12,7 +12,7 @@ import { CatchScope } from './scope/CatchScope';
 import { FunctionExpressionNameScope } from './scope/FunctionExpressionNameScope';
 import { ModuleScope } from './scope/ModuleScope';
 import { GlobalScope } from './scope/GlobalScope';
-import { Variable } from './variable';
+import { Variable } from './Variable';
 
 interface ScopeManagerOptions {
   gloablReturn?: boolean;

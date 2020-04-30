@@ -8,7 +8,7 @@ import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 import { Reference } from '../Reference';
-import { Variable } from '../variable';
+import { Variable } from '../Variable';
 
 class FunctionScope extends ScopeBase {
   declare type: ScopeType.function;
