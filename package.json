@@ -35,7 +35,7 @@
     "pre-commit": "yarn lint-staged",
     "pre-push": "yarn format-check",
     "postinstall": "lerna bootstrap -- --ignore-engines && yarn build && lerna link",
-    "check-clean-workspace-after-install": "git diff --quiet --exit-code",
+    "check-clean-workspace-after-install": "git diff --exit-code",
     "test": "lerna run test --concurrency 1",
     "typecheck": "lerna run typecheck"
   },
