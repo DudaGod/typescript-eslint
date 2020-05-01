@@ -1,4 +1,4 @@
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 import {
   expectToBeFunctionNameDefinition,
@@ -6,7 +6,7 @@ import {
   expectToBeGlobalScope,
   expectToBeModuleScope,
   expectToBeVariableDefinition,
-} from './util/expect';
+} from '../util/expect';
 
 describe('export declaration', () => {
   // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-static-and-runtme-semantics-module-records

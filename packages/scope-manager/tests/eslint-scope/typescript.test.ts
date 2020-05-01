@@ -1,6 +1,6 @@
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
-import { expectToBeFunctionScope, expectToBeGlobalScope } from './util/expect';
+import { expectToBeFunctionScope, expectToBeGlobalScope } from '../util/expect';
 
 describe('typescript', () => {
   describe('multiple call signatures', () => {
@@ -21,13 +21,11 @@ describe('typescript', () => {
       expectToBeGlobalScope(scope);
       expect(scope.variables).toHaveLength(1);
       expect(scope.references).toHaveLength(4);
-      expect(scope.isArgumentsMaterialized()).toBeTruthy();
 
       scope = scopeManager.scopes[1];
       expectToBeFunctionScope(scope);
       expect(scope.variables).toHaveLength(2);
       expect(scope.variables[0].name).toBe('arguments');
-      expect(scope.isArgumentsMaterialized()).toBeFalsy();
       expect(scope.references).toHaveLength(1);
     });
   });

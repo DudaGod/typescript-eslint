@@ -2,11 +2,16 @@ import { TSESTree } from '@typescript-eslint/experimental-utils';
 import { DefinitionType } from './DefinitionType';
 import { DefinitionBase } from './DefinitionBase';
 
-class ImplicitGlobalVariableDefinition extends DefinitionBase {
-  declare type: DefinitionType.ImplicitGlobalVariable;
-
-  constructor(name: TSESTree.BindingName, node: TSESTree.Node) {
-    super(DefinitionType.ImplicitGlobalVariable, name, node, null, null, null);
+class ImplicitGlobalVariableDefinition extends DefinitionBase<
+  DefinitionType.ImplicitGlobalVariable,
+  TSESTree.Node,
+  null
+> {
+  constructor(
+    name: TSESTree.BindingName,
+    node: ImplicitGlobalVariableDefinition['node'],
+  ) {
+    super(DefinitionType.ImplicitGlobalVariable, name, node, null);
   }
 }
 

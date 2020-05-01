@@ -1,5 +1,5 @@
-import { expectToBeFunctionScope, expectToBeGlobalScope } from './util/expect';
-import { parse } from './util/parse';
+import { expectToBeFunctionScope, expectToBeGlobalScope } from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('arguments', () => {
@@ -23,7 +23,6 @@ describe('arguments', () => {
     expectToBeFunctionScope(scope);
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('arguments');
-    expect(scope.isArgumentsMaterialized()).toBeTruthy();
     expect(scope.references).toHaveLength(1);
     expect(scope.references[0].resolved).toBe(scope.variables[0]);
   });

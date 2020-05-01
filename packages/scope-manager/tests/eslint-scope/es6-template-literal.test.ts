@@ -1,6 +1,6 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { expectToBeGlobalScope, expectToBeFunctionScope } from './util/expect';
-import { parse } from './util/parse';
+import { expectToBeGlobalScope, expectToBeFunctionScope } from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('ES6 template literal', () => {

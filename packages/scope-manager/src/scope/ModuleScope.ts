@@ -1,15 +1,13 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Scope } from '.';
+import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 
-class ModuleScope extends ScopeBase {
-  declare type: ScopeType.module;
-  declare block: TSESTree.Program;
+class ModuleScope extends ScopeBase<ScopeType.module, TSESTree.Program, Scope> {
   constructor(
     scopeManager: ScopeManager,
-    upperScope: Scope | null,
+    upperScope: ModuleScope['upper'],
     block: ModuleScope['block'],
   ) {
     super(scopeManager, ScopeType.module, upperScope, block, false);

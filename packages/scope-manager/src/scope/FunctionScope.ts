@@ -1,25 +1,25 @@
-import assert from 'assert';
 import {
   TSESTree,
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
-import { Scope } from '.';
+import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 import { Reference } from '../Reference';
 import { Variable } from '../Variable';
 
-class FunctionScope extends ScopeBase {
-  declare type: ScopeType.function;
-  declare block:
-    | TSESTree.ArrowFunctionExpression
-    | TSESTree.FunctionDeclaration
-    | TSESTree.FunctionExpression
-    | TSESTree.Program;
+class FunctionScope extends ScopeBase<
+  ScopeType.function,
+  | TSESTree.ArrowFunctionExpression
+  | TSESTree.FunctionDeclaration
+  | TSESTree.FunctionExpression
+  | TSESTree.Program,
+  Scope
+> {
   constructor(
     scopeManager: ScopeManager,
-    upperScope: Scope | null,
+    upperScope: FunctionScope['upper'],
     block: FunctionScope['block'],
     isMethodDefinition: boolean,
   ) {
@@ -34,43 +34,12 @@ class FunctionScope extends ScopeBase {
     // section 9.2.13, FunctionDeclarationInstantiation.
     // NOTE Arrow functions never have an arguments objects.
     if (this.block.type !== AST_NODE_TYPES.ArrowFunctionExpression) {
-      this.__defineArguments();
+      this.defineArguments();
     }
   }
 
-  isArgumentsMaterialized(): boolean {
-    // TODO(Constellation)
-    // We can more aggressive on this condition like this.
-    //
-    // function t() {
-    //     // arguments of t is always hidden.
-    //     function arguments() {
-    //     }
-    // }
-    if (this.block.type === AST_NODE_TYPES.ArrowFunctionExpression) {
-      return false;
-    }
-
-    if (!this.isStatic()) {
-      return true;
-    }
-
-    const variable = this.set.get('arguments');
-
-    assert(variable, 'Always have arguments variable.');
-    return variable!.tainted || variable!.references.length !== 0;
-  }
-
-  isThisMaterialized(): boolean {
-    if (!this.isStatic()) {
-      return true;
-    }
-    return this.thisFound;
-  }
-
-  __defineArguments(): void {
-    this.__defineGeneric('arguments', this.set, this.variables, null, null);
-    this.taints.set('arguments', true);
+  private defineArguments(): void {
+    this.defineVariable('arguments', this.set, this.variables, null, null);
   }
 
   // References in default parameters isn't resolved to variables which are in their function body.
@@ -79,7 +48,7 @@ class FunctionScope extends ScopeBase {
   //         const x = 2
   //         console.log(a)
   //     }
-  __isValidResolution(ref: Reference, variable: Variable): boolean {
+  protected isValidResolution(ref: Reference, variable: Variable): boolean {
     // If `options.gloablReturn` is true, `this.block` becomes a Program node.
     if (this.block.type === AST_NODE_TYPES.Program) {
       return true;

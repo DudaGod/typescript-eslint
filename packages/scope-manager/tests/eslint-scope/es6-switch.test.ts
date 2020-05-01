@@ -1,7 +1,7 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
-import { expectToBeGlobalScope, expectToBeSwitchScope } from './util/expect';
+import { expectToBeGlobalScope, expectToBeSwitchScope } from '../util/expect';
 
 describe('ES6 switch', () => {
   it('materialize scope', () => {

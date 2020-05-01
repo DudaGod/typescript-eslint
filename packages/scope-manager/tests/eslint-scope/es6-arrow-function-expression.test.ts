@@ -1,6 +1,6 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { expectToBeFunctionScope, expectToBeGlobalScope } from './util/expect';
-import { parse } from './util/parse';
+import { expectToBeFunctionScope, expectToBeGlobalScope } from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('ES6 arrow function expression', () => {

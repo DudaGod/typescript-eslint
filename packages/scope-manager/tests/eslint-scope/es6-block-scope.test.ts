@@ -2,8 +2,8 @@ import {
   expectToBeBlockScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from './util/expect';
-import { parse } from './util/parse';
+} from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('ES6 block scope', () => {

@@ -58,8 +58,9 @@ function analyze(tree: TSESTree.Node, providedOptions?: Options): ScopeManager {
   return scopeManager;
 }
 
+export * from './definition';
 export { Reference } from './Reference';
-export { Variable } from './Variable';
-export { Scope } from './scope';
+export * from './scope';
 export { ScopeManager } from './ScopeManager';
+export { Variable } from './Variable';
 export { analyze };

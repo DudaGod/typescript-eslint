@@ -5,13 +5,15 @@ import { Scope } from './Scope';
 import { FunctionNameDefinition } from '../definition';
 import { ScopeManager } from '../ScopeManager';
 
-class FunctionExpressionNameScope extends ScopeBase {
+class FunctionExpressionNameScope extends ScopeBase<
+  ScopeType.functionExpressionName,
+  TSESTree.FunctionExpression,
+  Scope
+> {
   public readonly functionExpressionScope: true;
-  declare type: ScopeType.functionExpressionName;
-  declare block: TSESTree.FunctionExpression;
   constructor(
     scopeManager: ScopeManager,
-    upperScope: Scope | null,
+    upperScope: FunctionExpressionNameScope['upper'],
     block: FunctionExpressionNameScope['block'],
   ) {
     super(
@@ -22,7 +24,10 @@ class FunctionExpressionNameScope extends ScopeBase {
       false,
     );
     if (block.id) {
-      this.__define(block.id, new FunctionNameDefinition(block.id, block));
+      this.defineIdentifier(
+        block.id,
+        new FunctionNameDefinition(block.id, block),
+      );
     }
     this.functionExpressionScope = true;
   }

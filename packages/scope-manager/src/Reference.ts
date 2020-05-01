@@ -16,39 +16,35 @@ interface ReferenceImplicitGlobal {
 
 /**
  * A Reference represents a single occurrence of an identifier in code.
- * @class Reference
  */
 class Reference {
   /**
    * The read-write mode of the reference.
    */
-  public readonly flag: ReferenceFlag;
+  private readonly flag: ReferenceFlag;
   /**
    * Reference to the enclosing Scope.
+   * @public
    */
   public readonly from: Scope;
   /**
    * Identifier syntax node.
+   * @public
    */
   public readonly identifier: TSESTree.Identifier;
   /**
-   * Whether the Reference is to write of initialization.
+   * `true` if this writing reference is a variable initializer or a default value.
+   * @public
    */
   public readonly init?: boolean;
   /**
-   * Whether the Reference might refer to a partial value of writeExpr.
-   */
-  public readonly partial?: boolean;
-  /**
-   * The variable this reference is resolved with.
+   * The {@link Variable} object that this reference refers to. If such variable was not defined, this is `null`.
+   * @public
    */
   public resolved: Variable | null;
   /**
-   * Whether the reference comes from a dynamic scope (such as 'eval', 'with', etc.), and may be trapped by dynamic scopes.
-   */
-  public tainted: boolean;
-  /**
-   * If reference is writeable, this is the tree being written to it.
+   * If reference is writeable, this is the node being written to it.
+   * @public
    */
   public readonly writeExpr?: TSESTree.Node | null;
 
@@ -83,18 +79,15 @@ class Reference {
     flag: ReferenceFlag,
     writeExpr?: TSESTree.Node | null,
     maybeImplicitGlobal?: ReferenceImplicitGlobal | null,
-    partial?: boolean,
     init?: boolean,
   ) {
     this.identifier = identifier;
     this.from = scope;
-    this.tainted = false;
     this.resolved = null;
     this.flag = flag;
 
     if (this.isWrite()) {
       this.writeExpr = writeExpr;
-      this.partial = partial;
       this.init = init;
     }
 
@@ -102,44 +95,42 @@ class Reference {
   }
 
   /**
-   * Whether the reference is static.
-   */
-  isStatic(): boolean {
-    return !this.tainted && this.resolved?.scope.isStatic() === true;
-  }
-
-  /**
    * Whether the reference is writeable.
+   * @public
    */
-  isWrite(): boolean {
+  public isWrite(): boolean {
     return !!(this.flag & ReferenceFlag.WRITE);
   }
 
   /**
    * Whether the reference is readable.
+   * @public
    */
-  isRead(): boolean {
+  public isRead(): boolean {
     return !!(this.flag & ReferenceFlag.READ);
   }
 
   /**
    * Whether the reference is read-only.
+   * @public
    */
-  isReadOnly(): boolean {
+  public isReadOnly(): boolean {
     return this.flag === ReferenceFlag.READ;
   }
 
   /**
    * Whether the reference is write-only.
+   * @public
    */
-  isWriteOnly(): boolean {
+  public isWriteOnly(): boolean {
     return this.flag === ReferenceFlag.WRITE;
   }
 
   /**
    * Whether the reference is read-write.
+   * @public
    */
-  isReadWrite(): boolean {
+  public isReadWrite(): boolean {
     return this.flag === ReferenceFlag.RW;
   }
 }

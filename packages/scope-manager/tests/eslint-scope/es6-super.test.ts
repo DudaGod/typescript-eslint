@@ -1,9 +1,9 @@
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import {
   expectToBeClassScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from './util/expect';
+} from '../util/expect';
 import { analyze } from '../../src/analyze';
 
 describe('ES6 super', () => {

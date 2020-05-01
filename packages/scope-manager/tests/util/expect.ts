@@ -12,7 +12,7 @@ import {
   ImportBindingDefinition,
   ParameterDefinition,
   VariableDefinition,
-} from '../../../src/definition';
+} from '../../src/definition';
 import {
   BlockScope,
   CatchScope,
@@ -26,7 +26,7 @@ import {
   ScopeType,
   SwitchScope,
   WithScope,
-} from '../../../src/scope';
+} from '../../src/scope';
 
 //////////////////
 // EXPECT SCOPE //

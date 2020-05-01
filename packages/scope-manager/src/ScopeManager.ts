@@ -1,5 +1,5 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import assert from 'assert';
+import { assert } from './assert';
 import {
   BlockScope,
   CatchScope,
@@ -24,63 +24,77 @@ interface ScopeManagerOptions {
 }
 
 class ScopeManager {
-  public scopes: Scope[];
+  public currentScope: Scope | null;
+  public declaredVariables: WeakMap<TSESTree.Node, Variable[]>;
+  /**
+   * The root scope
+   * @public
+   */
   public globalScope: GlobalScope | null;
-  private __options: ScopeManagerOptions;
-  public __currentScope: Scope | null;
-  public __nodeToScope: WeakMap<TSESTree.Node, Scope[]>;
-  public __declaredVariables: WeakMap<TSESTree.Node, Variable[]>;
+  public nodeToScope: WeakMap<TSESTree.Node, Scope[]>;
+  private options: ScopeManagerOptions;
+  /**
+   * All scopes
+   * @public
+   */
+  public scopes: Scope[];
 
   constructor(options: ScopeManagerOptions) {
     this.scopes = [];
     this.globalScope = null;
-    this.__nodeToScope = new WeakMap();
-    this.__currentScope = null;
-    this.__options = options;
-    this.__declaredVariables = new WeakMap();
+    this.nodeToScope = new WeakMap();
+    this.currentScope = null;
+    this.options = options;
+    this.declaredVariables = new WeakMap();
   }
 
-  __isGlobalReturn(): boolean {
-    return this.__options.gloablReturn === true;
+  public isGlobalReturn(): boolean {
+    return this.options.gloablReturn === true;
   }
 
-  isModule(): boolean {
-    return this.__options.sourceType === 'module';
+  public isModule(): boolean {
+    return this.options.sourceType === 'module';
   }
 
-  isImpliedStrict(): boolean {
-    return this.__options.impliedStrict === true;
-  }
-
-  isStrictModeSupported(): boolean {
+  public isStrict(): boolean {
     return (
-      this.__options.ecmaVersion != null && this.__options.ecmaVersion >= 5
+      this.options.impliedStrict === true &&
+      this.options.ecmaVersion != null &&
+      this.options.ecmaVersion >= 5
     );
+  }
+
+  public isES6(): boolean {
+    return this.options.ecmaVersion != null && this.options.ecmaVersion >= 6;
   }
 
   /**
    * Returns appropriate scope for this node.
    */
-  __get(node: TSESTree.Node): Scope[] | undefined {
-    return this.__nodeToScope.get(node);
+  private get(node: TSESTree.Node): Scope[] | undefined {
+    return this.nodeToScope.get(node);
   }
 
   /**
-   * Get variables that are declared by the node.
+   * Get the variables that a given AST node defines. The gotten variables' `def[].node`/`def[].parent` property is the node.
+   * If the node does not define any variable, this returns an empty array.
+   * @param node An AST node to get their variables.
+   * @public
+   */
+  public getDeclaredVariables(node: TSESTree.Node): Variable[] {
+    return this.declaredVariables.get(node) ?? [];
+  }
+
+  /**
+   * Get the scope of a given AST node. The gotten scope's `block` property is the node.
+   * This method never returns `function-expression-name` scope. If the node does not have their scope, this returns `null`.
    *
-   * "are declared by the node" means the node is same as `Variable.defs[].node` or `Variable.defs[].parent`.
-   * If the node declares nothing, this method returns an empty array.
+   * @param node An AST node to get their scope.
+   * @param inner If the node has multiple scopes, this returns the outermost scope normally.
+   *                If `inner` is `true` then this returns the innermost scope.
+   * @public
    */
-  getDeclaredVariables(node: TSESTree.Node): Variable[] {
-    return this.__declaredVariables.get(node) ?? [];
-  }
-
-  /**
-   * acquire scope from node.
-   * @param node - node for the acquired scope.
-   * @param inner - look up the most inner scope, default value is false.
-   */
-  acquire(node: TSESTree.Node, inner: boolean): Scope | null {
+  public acquire(node: TSESTree.Node, inner = false): Scope | null {
     function predicate(testScope: Scope): boolean {
       if (testScope.type === 'function' && testScope.functionExpressionScope) {
         return false;
@@ -88,7 +102,7 @@ class ScopeManager {
       return true;
     }
 
-    const scopes = this.__get(node);
+    const scopes = this.get(node);
 
     if (!scopes || scopes.length === 0) {
       return null;
@@ -121,97 +135,70 @@ class ScopeManager {
     return null;
   }
 
-  /**
-   * acquire all scopes from node.
-   * @param node - node for the acquired scope.
-   */
-  acquireAll(node: TSESTree.Node): Scope[] | undefined {
-    return this.__get(node);
-  }
-
-  /**
-   * release the node.
-   * @param node - releasing node.
-   * @param inner - look up the most inner scope, default value is false.
-   */
-  release(node: TSESTree.Node, inner: boolean): Scope | null {
-    const scopes = this.__get(node);
-
-    if (scopes?.length) {
-      const scope = scopes[0].upper;
-
-      if (!scope) {
-        return null;
-      }
-      return this.acquire(scope.block, inner);
-    }
-    return null;
-  }
-
-  attach(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
-  detach(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
-
-  __nestScope(scope: Scope): Scope {
+  private nestScope(scope: Scope): Scope {
     if (scope instanceof GlobalScope) {
-      assert(this.__currentScope === null);
+      assert(this.currentScope === null);
       this.globalScope = scope;
     }
-    this.__currentScope = scope;
+    this.currentScope = scope;
     return scope;
   }
 
-  __nestGlobalScope(node: GlobalScope['block']): Scope {
-    return this.__nestScope(new GlobalScope(this, node));
+  public nestGlobalScope(node: GlobalScope['block']): Scope {
+    return this.nestScope(new GlobalScope(this, node));
   }
 
-  __nestBlockScope(node: BlockScope['block']): Scope {
-    return this.__nestScope(new BlockScope(this, this.__currentScope, node));
+  public nestBlockScope(node: BlockScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new BlockScope(this, this.currentScope, node));
   }
 
-  __nestFunctionScope(
+  public nestFunctionScope(
     node: FunctionScope['block'],
     isMethodDefinition: boolean,
   ): Scope {
-    return this.__nestScope(
-      new FunctionScope(this, this.__currentScope, node, isMethodDefinition),
+    assert(this.currentScope);
+    return this.nestScope(
+      new FunctionScope(this, this.currentScope, node, isMethodDefinition),
     );
   }
 
-  __nestForScope(node: ForScope['block']): Scope {
-    return this.__nestScope(new ForScope(this, this.__currentScope, node));
+  public nestForScope(node: ForScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new ForScope(this, this.currentScope, node));
   }
 
-  __nestCatchScope(node: CatchScope['block']): Scope {
-    return this.__nestScope(new CatchScope(this, this.__currentScope, node));
+  public nestCatchScope(node: CatchScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new CatchScope(this, this.currentScope, node));
   }
 
-  __nestWithScope(node: WithScope['block']): Scope {
-    return this.__nestScope(new WithScope(this, this.__currentScope, node));
+  public nestWithScope(node: WithScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new WithScope(this, this.currentScope, node));
   }
 
-  __nestClassScope(node: ClassScope['block']): Scope {
-    return this.__nestScope(new ClassScope(this, this.__currentScope, node));
+  public nestClassScope(node: ClassScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new ClassScope(this, this.currentScope, node));
   }
 
-  __nestSwitchScope(node: SwitchScope['block']): Scope {
-    return this.__nestScope(new SwitchScope(this, this.__currentScope, node));
+  public nestSwitchScope(node: SwitchScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new SwitchScope(this, this.currentScope, node));
   }
 
-  __nestModuleScope(node: ModuleScope['block']): Scope {
-    return this.__nestScope(new ModuleScope(this, this.__currentScope, node));
+  public nestModuleScope(node: ModuleScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new ModuleScope(this, this.currentScope, node));
   }
 
-  __nestFunctionExpressionNameScope(
+  public nestFunctionExpressionNameScope(
     node: FunctionExpressionNameScope['block'],
   ): Scope {
-    return this.__nestScope(
-      new FunctionExpressionNameScope(this, this.__currentScope, node),
-    );
-  }
-
-  __isES6(): boolean {
-    return (
-      this.__options.ecmaVersion != null && this.__options.ecmaVersion >= 6
+    assert(this.currentScope);
+    return this.nestScope(
+      new FunctionExpressionNameScope(this, this.currentScope, node),
     );
   }
 }

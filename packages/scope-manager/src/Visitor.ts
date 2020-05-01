@@ -12,10 +12,6 @@ interface VisitorOptions {
 }
 
 declare class ESRecurseVisitorType {
-  __fallback: FallbackFn;
-  __visitor: ESRecurseVisitorType;
-  __childVisitorKeys: VisitorKeys;
-
   constructor(visitor: ESRecurseVisitorType | null, options: VisitorOptions);
 
   /**

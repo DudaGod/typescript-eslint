@@ -2,7 +2,7 @@ import {
   TSESTree,
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
-import assert from 'assert';
+import { assert } from './assert';
 import {
   CatchClauseDefinition,
   ClassNameDefinition,
@@ -68,7 +68,7 @@ class Importer extends Visitor {
     this.referencer.visitPattern(id, pattern => {
       this.referencer
         .currentScope(true)
-        .__define(
+        .defineIdentifier(
           pattern,
           new ImportBindingDefinition(pattern, specifier, this.declaration),
         );
@@ -111,14 +111,14 @@ class Referencer extends Visitor {
   currentScope(throwOnNull: true): Scope;
   currentScope(throwOnNull?: boolean): Scope | null {
     if (throwOnNull) {
-      assert(this.scopeManager.__currentScope);
+      assert(this.scopeManager.currentScope);
     }
-    return this.scopeManager.__currentScope;
+    return this.scopeManager.currentScope;
   }
 
   close(node: TSESTree.Node): void {
-    while (this.currentScope() && node === this.currentScope()!.block) {
-      this.scopeManager.__currentScope = this.currentScope()!.__close(
+    while (this.currentScope() && node === this.currentScope(true).block) {
+      this.scopeManager.currentScope = this.currentScope(true).close(
         this.scopeManager,
       );
     }
@@ -142,12 +142,11 @@ class Referencer extends Visitor {
     init: boolean,
   ): void {
     assignments.forEach(assignment => {
-      this.currentScope(true).__referencing(
+      this.currentScope(true).referencing(
         pattern,
         ReferenceFlag.WRITE,
         assignment.right,
         maybeImplicitGlobal,
-        pattern !== assignment.left,
         init,
       );
     });
@@ -172,7 +171,7 @@ class Referencer extends Visitor {
       visitPatternOptions = { processRightHandNodes: false };
     } else {
       assert(callback);
-      visitPatternCallback = callback!;
+      visitPatternCallback = callback;
       visitPatternOptions = optionsOrCallback;
     }
 
@@ -185,8 +184,6 @@ class Referencer extends Visitor {
   }
 
   visitFunction(node: Exclude<FunctionScope['block'], TSESTree.Program>): void {
-    let i: number, iz: number;
-
     // FunctionDeclaration name is defined in upper scope
     // NOTE: Not referring variableScope. It is intended.
     // Since
@@ -195,7 +192,7 @@ class Referencer extends Visitor {
 
     if (node.type === AST_NODE_TYPES.FunctionDeclaration && node.id) {
       // id is defined in upper scope
-      this.currentScope(true).__define(
+      this.currentScope(true).defineIdentifier(
         node.id,
         new FunctionNameDefinition(node.id, node),
       );
@@ -204,23 +201,23 @@ class Referencer extends Visitor {
     // FunctionExpression with name creates its special scope;
     // FunctionExpressionNameScope.
     if (node.type === AST_NODE_TYPES.FunctionExpression && node.id) {
-      this.scopeManager.__nestFunctionExpressionNameScope(node);
+      this.scopeManager.nestFunctionExpressionNameScope(node);
     }
 
     // Consider this function is in the MethodDefinition.
-    this.scopeManager.__nestFunctionScope(node, this.isInnerMethodDefinition);
+    this.scopeManager.nestFunctionScope(node, this.isInnerMethodDefinition);
 
     const visitPatternCallback: PatternVisitorCallback = (pattern, info) => {
-      this.currentScope(true).__define(
+      this.currentScope(true).defineIdentifier(
         pattern,
-        new ParameterDefinition(pattern, node, i, info.rest),
+        new ParameterDefinition(pattern, node, info.rest),
       );
 
       this.referencingDefaultValue(pattern, info.assignments, null, true);
     };
 
     // Process parameter declarations.
-    for (i = 0, iz = node.params.length; i < iz; ++i) {
+    for (let i = 0; i < node.params.length; ++i) {
       this.visitPattern(
         node.params[i],
         { processRightHandNodes: true },
@@ -244,7 +241,7 @@ class Referencer extends Visitor {
 
   visitClass(node: TSESTree.ClassDeclaration | TSESTree.ClassExpression): void {
     if (node.type === AST_NODE_TYPES.ClassDeclaration && node.id) {
-      this.currentScope(true).__define(
+      this.currentScope(true).defineIdentifier(
         node.id,
         new ClassNameDefinition(node.id, node),
       );
@@ -252,10 +249,10 @@ class Referencer extends Visitor {
 
     this.visit(node.superClass);
 
-    this.scopeManager.__nestClassScope(node);
+    this.scopeManager.nestClassScope(node);
 
     if (node.id) {
-      this.currentScope(true).__define(
+      this.currentScope(true).defineIdentifier(
         node.id,
         new ClassNameDefinition(node.id, node),
       );
@@ -293,18 +290,17 @@ class Referencer extends Visitor {
       node.left.type === AST_NODE_TYPES.VariableDeclaration &&
       node.left.kind !== 'var'
     ) {
-      this.scopeManager.__nestForScope(node);
+      this.scopeManager.nestForScope(node);
     }
 
     if (node.left.type === AST_NODE_TYPES.VariableDeclaration) {
       this.visit(node.left);
       this.visitPattern(node.left.declarations[0].id, pattern => {
-        this.currentScope(true).__referencing(
+        this.currentScope(true).referencing(
           pattern,
           ReferenceFlag.WRITE,
           node.right,
           null,
-          true,
           true,
         );
       });
@@ -313,26 +309,23 @@ class Referencer extends Visitor {
         node.left,
         { processRightHandNodes: true },
         (pattern, info) => {
-          let maybeImplicitGlobal = null;
-
-          if (!this.currentScope(true).isStrict) {
-            maybeImplicitGlobal = {
-              pattern,
-              node,
-            };
-          }
+          const maybeImplicitGlobal = !this.currentScope(true).isStrict
+            ? {
+                pattern,
+                node,
+              }
+            : null;
           this.referencingDefaultValue(
             pattern,
             info.assignments,
             maybeImplicitGlobal,
             false,
           );
-          this.currentScope(true).__referencing(
+          this.currentScope(true).referencing(
             pattern,
             ReferenceFlag.WRITE,
             node.right,
             maybeImplicitGlobal,
-            true,
             false,
           );
         },
@@ -356,19 +349,18 @@ class Referencer extends Visitor {
       decl.id,
       { processRightHandNodes: true },
       (pattern, info) => {
-        variableTargetScope.__define(
+        variableTargetScope.defineIdentifier(
           pattern,
-          new VariableDefinition(pattern, decl, node, index, node.kind),
+          new VariableDefinition(pattern, decl, node),
         );
 
         this.referencingDefaultValue(pattern, info.assignments, null, true);
         if (init) {
-          this.currentScope(true).__referencing(
+          this.currentScope(true).referencing(
             pattern,
             ReferenceFlag.WRITE,
             init,
             null,
-            !info.topLevel,
             true,
           );
         }
@@ -383,32 +375,29 @@ class Referencer extends Visitor {
           node.left,
           { processRightHandNodes: true },
           (pattern, info) => {
-            let maybeImplicitGlobal = null;
-
-            if (!this.currentScope(true).isStrict) {
-              maybeImplicitGlobal = {
-                pattern,
-                node,
-              };
-            }
+            const maybeImplicitGlobal = !this.currentScope(true).isStrict
+              ? {
+                  pattern,
+                  node,
+                }
+              : null;
             this.referencingDefaultValue(
               pattern,
               info.assignments,
               maybeImplicitGlobal,
               false,
             );
-            this.currentScope(true).__referencing(
+            this.currentScope(true).referencing(
               pattern,
               ReferenceFlag.WRITE,
               node.right,
               maybeImplicitGlobal,
-              !info.topLevel,
               false,
             );
           },
         );
       } else {
-        this.currentScope(true).__referencing(
+        this.currentScope(true).referencing(
           node.left,
           ReferenceFlag.RW,
           node.right,
@@ -421,7 +410,7 @@ class Referencer extends Visitor {
   }
 
   CatchClause(node: TSESTree.CatchClause): void {
-    this.scopeManager.__nestCatchScope(node);
+    this.scopeManager.nestCatchScope(node);
 
     if (node.param) {
       const param = node.param;
@@ -429,7 +418,7 @@ class Referencer extends Visitor {
         param,
         { processRightHandNodes: true },
         (pattern, info) => {
-          this.currentScope(true).__define(
+          this.currentScope(true).defineIdentifier(
             pattern,
             new CatchClauseDefinition(param, node),
           );
@@ -443,22 +432,19 @@ class Referencer extends Visitor {
   }
 
   Program(node: TSESTree.Program): void {
-    this.scopeManager.__nestGlobalScope(node);
+    this.scopeManager.nestGlobalScope(node);
 
-    if (this.scopeManager.__isGlobalReturn()) {
+    if (this.scopeManager.isGlobalReturn()) {
       // Force strictness of GlobalScope to false when using node.js scope.
       this.currentScope(true).isStrict = false;
-      this.scopeManager.__nestFunctionScope(node, false);
+      this.scopeManager.nestFunctionScope(node, false);
     }
 
-    if (this.scopeManager.__isES6() && this.scopeManager.isModule()) {
-      this.scopeManager.__nestModuleScope(node);
+    if (this.scopeManager.isES6() && this.scopeManager.isModule()) {
+      this.scopeManager.nestModuleScope(node);
     }
 
-    if (
-      this.scopeManager.isStrictModeSupported() &&
-      this.scopeManager.isImpliedStrict()
-    ) {
+    if (this.scopeManager.isStrict()) {
       this.currentScope(true).isStrict = true;
     }
 
@@ -467,12 +453,12 @@ class Referencer extends Visitor {
   }
 
   Identifier(node: TSESTree.Identifier): void {
-    this.currentScope(true).__referencing(node);
+    this.currentScope(true).referencing(node);
   }
 
   UpdateExpression(node: TSESTree.UpdateExpression): void {
     if (PatternVisitor.isPattern(node.argument)) {
-      this.currentScope(true).__referencing(
+      this.currentScope(true).referencing(
         node.argument,
         ReferenceFlag.RW,
         null,
@@ -514,7 +500,7 @@ class Referencer extends Visitor {
       node.init.type === AST_NODE_TYPES.VariableDeclaration &&
       node.init.kind !== 'var'
     ) {
-      this.scopeManager.__nestForScope(node);
+      this.scopeManager.nestForScope(node);
     }
 
     this.visitChildren(node);
@@ -535,8 +521,8 @@ class Referencer extends Visitor {
   }
 
   BlockStatement(node: TSESTree.BlockStatement): void {
-    if (this.scopeManager.__isES6()) {
-      this.scopeManager.__nestBlockScope(node);
+    if (this.scopeManager.isES6()) {
+      this.scopeManager.nestBlockScope(node);
     }
 
     this.visitChildren(node);
@@ -544,15 +530,11 @@ class Referencer extends Visitor {
     this.close(node);
   }
 
-  ThisExpression(): void {
-    this.currentScope(true).variableScope.__detectThis();
-  }
-
   WithStatement(node: TSESTree.WithStatement): void {
     this.visit(node.object);
 
     // Then nest scope for WithStatement.
-    this.scopeManager.__nestWithScope(node);
+    this.scopeManager.nestWithScope(node);
 
     this.visit(node.body);
 
@@ -579,8 +561,8 @@ class Referencer extends Visitor {
   SwitchStatement(node: TSESTree.SwitchStatement): void {
     this.visit(node.discriminant);
 
-    if (this.scopeManager.__isES6()) {
-      this.scopeManager.__nestSwitchScope(node);
+    if (this.scopeManager.isES6()) {
+      this.scopeManager.nestSwitchScope(node);
     }
 
     for (let i = 0, iz = node.cases.length; i < iz; ++i) {
@@ -612,7 +594,7 @@ class Referencer extends Visitor {
 
   ImportDeclaration(node: TSESTree.ImportDeclaration): void {
     assert(
-      this.scopeManager.__isES6() && this.scopeManager.isModule(),
+      this.scopeManager.isES6() && this.scopeManager.isModule(),
       'ImportDeclaration should appear when the mode is ES6 and in the module context.',
     );
 

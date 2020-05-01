@@ -2,17 +2,17 @@ import { TSESTree } from '@typescript-eslint/experimental-utils';
 import { DefinitionType } from './DefinitionType';
 import { DefinitionBase } from './DefinitionBase';
 
-class VariableDefinition extends DefinitionBase {
-  declare type: DefinitionType.Variable;
-
+class VariableDefinition extends DefinitionBase<
+  DefinitionType.Variable,
+  TSESTree.VariableDeclarator,
+  TSESTree.VariableDeclaration
+> {
   constructor(
     name: TSESTree.Identifier,
-    node: TSESTree.Node,
+    node: VariableDefinition['node'],
     decl: TSESTree.VariableDeclaration,
-    index: number,
-    kind: TSESTree.VariableDeclaration['kind'],
   ) {
-    super(DefinitionType.Variable, name, node, decl, index, kind);
+    super(DefinitionType.Variable, name, node, decl);
   }
 }
 

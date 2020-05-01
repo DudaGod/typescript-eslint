@@ -3,7 +3,7 @@ import {
   TSESTree,
 } from '@typescript-eslint/experimental-utils';
 import { visit } from 'esrecurse';
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('ScopeManager.prototype.getDeclaredVariables', () => {

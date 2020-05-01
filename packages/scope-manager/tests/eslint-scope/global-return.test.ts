@@ -4,8 +4,8 @@ import {
   expectToBeFunctionScope,
   expectToBeModuleScope,
   expectToBeImportBindingDefinition,
-} from './util/expect';
-import { parse } from './util/parse';
+} from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('gloablReturn option', () => {

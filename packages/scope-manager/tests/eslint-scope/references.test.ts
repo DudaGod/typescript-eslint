@@ -1,4 +1,4 @@
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('References:', () => {

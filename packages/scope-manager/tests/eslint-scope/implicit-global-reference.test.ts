@@ -1,5 +1,5 @@
-import { expectToBeGlobalScope } from './util/expect';
-import { parse } from './util/parse';
+import { expectToBeGlobalScope } from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 import { DefinitionType } from '../../src/definition';
 

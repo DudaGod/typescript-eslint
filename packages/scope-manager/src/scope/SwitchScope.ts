@@ -1,15 +1,17 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Scope } from '.';
+import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 
-class SwitchScope extends ScopeBase {
-  declare type: ScopeType.switch;
-  declare block: TSESTree.SwitchStatement;
+class SwitchScope extends ScopeBase<
+  ScopeType.switch,
+  TSESTree.SwitchStatement,
+  Scope
+> {
   constructor(
     scopeManager: ScopeManager,
-    upperScope: Scope | null,
+    upperScope: SwitchScope['upper'],
     block: SwitchScope['block'],
   ) {
     super(scopeManager, ScopeType.switch, upperScope, block, false);

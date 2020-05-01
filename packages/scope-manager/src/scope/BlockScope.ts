@@ -1,15 +1,17 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Scope } from '.';
+import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 
-class BlockScope extends ScopeBase {
-  declare type: ScopeType.block;
-  declare block: TSESTree.BlockStatement;
+class BlockScope extends ScopeBase<
+  ScopeType.block,
+  TSESTree.BlockStatement,
+  Scope
+> {
   constructor(
     scopeManager: ScopeManager,
-    upperScope: Scope | null,
+    upperScope: BlockScope['upper'],
     block: BlockScope['block'],
   ) {
     super(scopeManager, ScopeType.block, upperScope, block, false);

@@ -1,9 +1,9 @@
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import {
   expectToBeGlobalScope,
   expectToBeImportBindingDefinition,
   expectToBeModuleScope,
-} from './util/expect';
+} from '../util/expect';
 import { analyze } from '../../src/analyze';
 
 describe('import declaration', () => {

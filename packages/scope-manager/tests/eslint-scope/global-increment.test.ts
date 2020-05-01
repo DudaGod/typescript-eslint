@@ -1,6 +1,6 @@
-import { parse } from './util/parse';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
-import { expectToBeGlobalScope } from './util/expect';
+import { expectToBeGlobalScope } from '../util/expect';
 
 describe('global increment', () => {
   it('becomes read/write', () => {

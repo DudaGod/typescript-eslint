@@ -1,18 +1,17 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Scope } from '.';
+import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 
-class ForScope extends ScopeBase {
-  declare type: ScopeType.class;
-  declare block:
-    | TSESTree.ForInStatement
-    | TSESTree.ForOfStatement
-    | TSESTree.ForStatement;
+class ForScope extends ScopeBase<
+  ScopeType.for,
+  TSESTree.ForInStatement | TSESTree.ForOfStatement | TSESTree.ForStatement,
+  Scope
+> {
   constructor(
     scopeManager: ScopeManager,
-    upperScope: Scope | null,
+    upperScope: ForScope['upper'],
     block: ForScope['block'],
   ) {
     super(scopeManager, ScopeType.for, upperScope, block, false);

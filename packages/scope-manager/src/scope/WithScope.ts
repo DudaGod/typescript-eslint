@@ -1,29 +1,30 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Scope } from '.';
+import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 
-class WithScope extends ScopeBase {
-  declare type: ScopeType.with;
-  declare block: TSESTree.WithStatement;
+class WithScope extends ScopeBase<
+  ScopeType.with,
+  TSESTree.WithStatement,
+  Scope
+> {
   constructor(
     scopeManager: ScopeManager,
-    upperScope: Scope | null,
+    upperScope: WithScope['upper'],
     block: WithScope['block'],
   ) {
     super(scopeManager, ScopeType.with, upperScope, block, false);
   }
-  __close(scopeManager: ScopeManager): ReturnType<ScopeBase['__close']> {
-    if (this.__shouldStaticallyClose()) {
-      return super.__close(scopeManager);
+  close(scopeManager: ScopeManager): Scope | null {
+    if (this.shouldStaticallyClose()) {
+      return super.close(scopeManager);
     }
-    for (let i = 0, iz = this.__left!.length; i < iz; ++i) {
-      const ref = this.__left![i];
-      ref.tainted = true;
-      this.__delegateToUpperScope(ref);
+    for (let i = 0, iz = this.left!.length; i < iz; ++i) {
+      const ref = this.left![i];
+      this.delegateToUpperScope(ref);
     }
-    this.__left = null;
+    this.left = null;
     return this.upper;
   }
 }

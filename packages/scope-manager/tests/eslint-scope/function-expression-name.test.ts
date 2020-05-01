@@ -2,8 +2,8 @@ import {
   expectToBeFunctionExpressionNameScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from './util/expect';
-import { parse } from './util/parse';
+} from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('function name', () => {
@@ -22,14 +22,12 @@ describe('function name', () => {
     expectToBeGlobalScope(scope);
     expect(scope.variables).toHaveLength(0);
     expect(scope.references).toHaveLength(0);
-    expect(scope.isArgumentsMaterialized()).toBeTruthy();
 
     // Function expression name scope
     scope = scopeManager.scopes[1];
     expectToBeFunctionExpressionNameScope(scope);
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('name');
-    expect(scope.isArgumentsMaterialized()).toBeTruthy();
     expect(scope.references).toHaveLength(0);
     expect(scope.upper === globalScope).toBeTruthy();
 
@@ -38,7 +36,6 @@ describe('function name', () => {
     expectToBeFunctionScope(scope);
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('arguments');
-    expect(scope.isArgumentsMaterialized()).toBeFalsy();
     expect(scope.references).toHaveLength(0);
     expect(scope.upper === scopeManager.scopes[1]).toBeTruthy();
   });

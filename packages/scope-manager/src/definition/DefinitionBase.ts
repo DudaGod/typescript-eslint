@@ -1,51 +1,45 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
 import { DefinitionType } from './DefinitionType';
 
-abstract class DefinitionBase {
+abstract class DefinitionBase<
+  TType extends DefinitionType,
+  TNode extends TSESTree.Node,
+  TParent extends TSESTree.Node | null
+> {
   /**
-   * type of the occurrence
+   * The type of the definition
+   * @public
    */
-  public readonly type: DefinitionType;
+  public readonly type: TType;
 
   /**
-   * the identifier AST node of the occurrence.
+   * The `Identifier` node of this definition
+   * @public
    */
   public readonly name: TSESTree.BindingName;
 
   /**
-   * the enclosing node of the identifier.
+   * The enclosing node of the name.
+   * @public
    */
-  public readonly node: TSESTree.Node;
+  public readonly node: TNode;
 
   /**
    * the enclosing statement node of the identifier.
+   * @public
    */
-  public readonly parent: TSESTree.Node | null | undefined;
-
-  /**
-   * the index in the declaration statement.
-   */
-  public readonly index: number | null | undefined;
-
-  /**
-   * the kind of the declaration statement.
-   */
-  public readonly kind: string | null | undefined;
+  public readonly parent: TParent;
 
   constructor(
-    type: DefinitionType,
+    type: TType,
     name: TSESTree.BindingName,
-    node: TSESTree.Node,
-    parent?: TSESTree.Node | null,
-    index?: number | null,
-    kind?: string | null,
+    node: TNode,
+    parent: TParent,
   ) {
     this.type = type;
     this.name = name;
     this.node = node;
     this.parent = parent;
-    this.index = index;
-    this.kind = kind;
   }
 }
 

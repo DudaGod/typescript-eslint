@@ -4,8 +4,8 @@ import {
   expectToBeGlobalScope,
   expectToBeIdentifier,
   expectToBeParameterDefinition,
-} from './util/expect';
-import { parse } from './util/parse';
+} from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('ES6 rest arguments', () => {

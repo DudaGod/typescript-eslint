@@ -2,8 +2,8 @@ import {
   expectToBeBlockScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from './util/expect';
-import { parse } from './util/parse';
+} from '../util/expect';
+import { parse } from '../util/parse';
 import { analyze } from '../../src/analyze';
 
 describe('label', () => {
@@ -24,13 +24,11 @@ describe('label', () => {
     expectToBeFunctionScope(scope);
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('arguments');
-    expect(scope.isArgumentsMaterialized()).toBeFalsy();
     expect(scope.references).toHaveLength(0);
 
     scope = scopeManager.scopes[2];
     expectToBeBlockScope(scope);
     expect(scope.variables).toHaveLength(0);
-    expect(scope.isArgumentsMaterialized()).toBeTruthy();
     expect(scope.references).toHaveLength(0);
   });
 
