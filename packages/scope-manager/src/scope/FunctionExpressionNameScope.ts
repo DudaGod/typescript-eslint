@@ -1,9 +1,8 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Scope } from '.';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
-import { Definition } from '../definition';
-import { VariableType } from '../VariableType';
+import { Scope } from './Scope';
+import { FunctionNameDefinition } from '../definition';
 import { ScopeManager } from '../ScopeManager';
 
 class FunctionExpressionNameScope extends ScopeBase {
@@ -23,17 +22,7 @@ class FunctionExpressionNameScope extends ScopeBase {
       false,
     );
     if (block.id) {
-      this.__define(
-        block.id,
-        new Definition(
-          VariableType.FunctionName,
-          block.id,
-          block,
-          null,
-          null,
-          null,
-        ),
-      );
+      this.__define(block.id, new FunctionNameDefinition(block.id, block));
     }
     this.functionExpressionScope = true;
   }

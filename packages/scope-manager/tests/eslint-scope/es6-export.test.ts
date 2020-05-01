@@ -1,11 +1,12 @@
 import { parse } from './util/parse';
 import { analyze } from '../../src/analyze';
 import {
+  expectToBeFunctionNameDefinition,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
   expectToBeModuleScope,
+  expectToBeVariableDefinition,
 } from './util/expect';
-import { VariableType } from '../../src/VariableType';
 
 describe('export declaration', () => {
   // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-static-and-runtme-semantics-module-records
@@ -25,7 +26,7 @@ describe('export declaration', () => {
     expectToBeModuleScope(scope);
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('v');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.Variable);
+    expectToBeVariableDefinition(scope.variables[0].defs[0]);
     expect(scope.references).toHaveLength(0);
   });
 
@@ -45,7 +46,7 @@ describe('export declaration', () => {
     expectToBeModuleScope(scope);
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('f');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.FunctionName);
+    expectToBeFunctionNameDefinition(scope.variables[0].defs[0]);
     expect(scope.references).toHaveLength(0);
 
     scope = scopeManager.scopes[2];

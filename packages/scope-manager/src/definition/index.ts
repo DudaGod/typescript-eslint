@@ -1,2 +1,9 @@
+export { CatchClauseDefinition } from './CatchClauseDefinition';
+export { ClassNameDefinition } from './ClassNameDefinition';
 export { Definition } from './Definition';
+export { DefinitionType } from './DefinitionType';
+export { FunctionNameDefinition } from './FunctionNameDefinition';
+export { ImplicitGlobalVariableDefinition } from './ImplicitGlobalVariableDefinition';
+export { ImportBindingDefinition } from './ImportBindingDefinition';
 export { ParameterDefinition } from './ParameterDefinition';
+export { VariableDefinition } from './VariableDefinition';

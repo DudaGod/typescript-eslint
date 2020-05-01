@@ -6,17 +6,16 @@ import {
 import { FunctionScope } from './FunctionScope';
 import { GlobalScope } from './GlobalScope';
 import { ScopeType } from './ScopeType';
-import { Definition } from '../definition';
+import { ScopeManager } from '../ScopeManager';
+import { BlockNode, Scope } from './Scope';
+import { ModuleScope } from './ModuleScope';
+import { Definition, DefinitionType } from '../definition';
 import {
   Reference,
   ReferenceFlag,
   ReferenceImplicitGlobal,
 } from '../Reference';
-import { ScopeManager } from '../ScopeManager';
-import { BlockNode, Scopes } from './Scopes';
 import { Variable } from '../Variable';
-import { VariableType } from '../VariableType';
-import { ModuleScope } from './ModuleScope';
 
 /**
  * Test if scope is strict
@@ -104,7 +103,7 @@ function isStrictScope(
  * Register scope
  */
 function registerScope(scopeManager: ScopeManager, scope: ScopeBase): void {
-  const scopeWillBeValidChildClassTrustMe = scope as Scopes;
+  const scopeWillBeValidChildClassTrustMe = scope as Scope;
   scopeManager.scopes.push(scopeWillBeValidChildClassTrustMe);
 
   const scopes = scopeManager.__nodeToScope.get(scope.block);
@@ -123,14 +122,14 @@ function registerScope(scopeManager: ScopeManager, scope: ScopeBase): void {
  */
 function shouldBeStatically(def: Definition): boolean {
   return (
-    def.type === VariableType.ClassName ||
-    (def.type === VariableType.Variable &&
+    def.type === DefinitionType.ClassName ||
+    (def.type === DefinitionType.Variable &&
       def.parent?.type === AST_NODE_TYPES.VariableDeclaration &&
       def.parent.kind !== 'var')
   );
 }
 
-class ScopeBase {
+abstract class ScopeBase {
   /**
    * A reference to the scope-defining syntax node.
    */
@@ -184,7 +183,7 @@ class ScopeBase {
   /**
    * Reference to the parent {@link Scope}.
    */
-  public readonly upper: Scopes | null;
+  public readonly upper: Scope | null;
   /**
    * The scoped {@link Variable}s of this scope. In the case of a
    * 'function' scope this includes the automatic argument *arguments* as
@@ -204,7 +203,7 @@ class ScopeBase {
   constructor(
     scopeManager: ScopeManager,
     type: ScopeType,
-    upperScope: Scopes | null,
+    upperScope: Scope | null,
     block: BlockNode,
     isMethodDefinition: boolean,
   ) {
@@ -280,7 +279,7 @@ class ScopeBase {
     }
   };
 
-  __close(_scopeManager: ScopeManager): Scopes | null {
+  __close(_scopeManager: ScopeManager): Scope | null {
     let closeRef;
 
     if (this.__shouldStaticallyClose()) {
@@ -370,7 +369,7 @@ class ScopeBase {
 
     variable = set.get(name);
     if (!variable) {
-      variable = new Variable(name, this as Scopes);
+      variable = new Variable(name, this as Scope);
       set.set(name, variable);
       variables.push(variable);
     }
@@ -411,7 +410,7 @@ class ScopeBase {
 
     const ref = new Reference(
       node,
-      this as Scopes,
+      this as Scope,
       assign ?? ReferenceFlag.READ,
       writeExpr,
       maybeImplicitGlobal,

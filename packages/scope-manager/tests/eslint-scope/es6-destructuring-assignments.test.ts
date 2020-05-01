@@ -5,7 +5,7 @@ import {
   expectToBeFunctionScope,
   expectToBeGlobalScope,
   expectToBeIdentifier,
-  expectToBeParameterDefinitionWithRest,
+  expectToBeParameterDefinition,
 } from './util/expect';
 
 describe('ES6 destructuring assignments', () => {
@@ -1083,9 +1083,11 @@ describe('ES6 destructuring assignments', () => {
     expect(scope.variables[1].name).toBe('a');
     expect(scope.variables[2].name).toBe('b');
     expect(scope.variables[3].name).toBe('rest');
-    expectToBeParameterDefinitionWithRest(scope.variables[3].defs[0]);
+    expectToBeParameterDefinition(scope.variables[3].defs[0]);
+    expect(scope.variables[3].defs[0].rest).toBeTruthy();
     expect(scope.variables[4].name).toBe('rest2');
-    expectToBeParameterDefinitionWithRest(scope.variables[4].defs[0]);
+    expectToBeParameterDefinition(scope.variables[4].defs[0]);
+    expect(scope.variables[4].defs[0].rest).toBeTruthy();
     expect(scope.references).toHaveLength(0);
   });
 

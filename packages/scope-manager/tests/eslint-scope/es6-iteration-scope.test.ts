@@ -4,9 +4,9 @@ import {
   expectToBeForScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
+  expectToBeVariableDefinition,
 } from './util/expect';
 import { analyze } from '../../src/analyze';
-import { VariableType } from '../../src/VariableType';
 
 describe('ES6 iteration scope', () => {
   it('let materialize iteration scope for ForInStatement#1', () => {
@@ -150,11 +150,11 @@ describe('ES6 iteration scope', () => {
     expectToBeForScope(scope);
     expect(scope.variables).toHaveLength(3);
     expect(scope.variables[0].name).toBe('i');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.Variable);
+    expectToBeVariableDefinition(scope.variables[0].defs[0]);
     expect(scope.variables[1].name).toBe('j');
-    expect(scope.variables[1].defs[0].type).toBe(VariableType.Variable);
+    expectToBeVariableDefinition(scope.variables[1].defs[0]);
     expect(scope.variables[2].name).toBe('k');
-    expect(scope.variables[2].defs[0].type).toBe(VariableType.Variable);
+    expectToBeVariableDefinition(scope.variables[2].defs[0]);
     expect(scope.references).toHaveLength(7);
     expect(scope.references[0].identifier.name).toBe('i');
     expect(scope.references[0].resolved).toBe(scope.variables[0]);

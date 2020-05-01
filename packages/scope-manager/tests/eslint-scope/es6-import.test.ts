@@ -1,7 +1,10 @@
 import { parse } from './util/parse';
-import { expectToBeGlobalScope, expectToBeModuleScope } from './util/expect';
+import {
+  expectToBeGlobalScope,
+  expectToBeImportBindingDefinition,
+  expectToBeModuleScope,
+} from './util/expect';
 import { analyze } from '../../src/analyze';
-import { VariableType } from '../../src/VariableType';
 
 describe('import declaration', () => {
   // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-static-and-runtme-semantics-module-records
@@ -22,7 +25,7 @@ describe('import declaration', () => {
     expect(scope.isStrict).toBeTruthy();
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('v');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.ImportBinding);
+    expectToBeImportBindingDefinition(scope.variables[0].defs[0]);
     expect(scope.references).toHaveLength(0);
   });
 
@@ -43,7 +46,7 @@ describe('import declaration', () => {
     expect(scope.isStrict).toBeTruthy();
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('ns');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.ImportBinding);
+    expectToBeImportBindingDefinition(scope.variables[0].defs[0]);
     expect(scope.references).toHaveLength(0);
   });
 
@@ -64,7 +67,7 @@ describe('import declaration', () => {
     expect(scope.isStrict).toBeTruthy();
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('x');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.ImportBinding);
+    expectToBeImportBindingDefinition(scope.variables[0].defs[0]);
     expect(scope.references).toHaveLength(0);
   });
 
@@ -85,7 +88,7 @@ describe('import declaration', () => {
     expect(scope.isStrict).toBeTruthy();
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('v');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.ImportBinding);
+    expectToBeImportBindingDefinition(scope.variables[0].defs[0]);
     expect(scope.references).toHaveLength(0);
   });
 

@@ -3,10 +3,10 @@ import {
   expectToBeGlobalScope,
   expectToBeFunctionScope,
   expectToBeModuleScope,
+  expectToBeImportBindingDefinition,
 } from './util/expect';
 import { parse } from './util/parse';
 import { analyze } from '../../src/analyze';
-import { VariableType } from '../../src/VariableType';
 
 describe('gloablReturn option', () => {
   it('creates a function scope following the global scope immediately', () => {
@@ -64,7 +64,7 @@ describe('gloablReturn option', () => {
     expectToBeModuleScope(scope);
     expect(scope.variables).toHaveLength(1);
     expect(scope.variables[0].name).toBe('v');
-    expect(scope.variables[0].defs[0].type).toBe(VariableType.ImportBinding);
+    expectToBeImportBindingDefinition(scope.variables[0].defs[0]);
     expect(scope.references).toHaveLength(0);
   });
 });

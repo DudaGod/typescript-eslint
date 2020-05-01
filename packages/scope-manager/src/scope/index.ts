@@ -6,7 +6,7 @@ export { FunctionExpressionNameScope } from './FunctionExpressionNameScope';
 export { FunctionScope } from './FunctionScope';
 export { GlobalScope } from './GlobalScope';
 export { ModuleScope } from './ModuleScope';
-export { Scopes as Scope } from './Scopes';
+export { Scope } from './Scope';
 export { ScopeType } from './ScopeType';
 export { SwitchScope } from './SwitchScope';
 export { WithScope } from './WithScope';

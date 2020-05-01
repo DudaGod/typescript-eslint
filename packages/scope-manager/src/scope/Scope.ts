@@ -9,7 +9,7 @@ import { ModuleScope } from './ModuleScope';
 import { SwitchScope } from './SwitchScope';
 import { WithScope } from './WithScope';
 
-type Scopes =
+type Scope =
   | BlockScope
   | CatchScope
   | ClassScope
@@ -21,6 +21,6 @@ type Scopes =
   | SwitchScope
   | WithScope;
 
-type BlockNode = Scopes['block'];
+type BlockNode = Scope['block'];
 
-export { BlockNode, Scopes };
+export { BlockNode, Scope };

@@ -8,7 +8,7 @@ import { Definition } from '../definition';
 import { Reference } from '../Reference';
 import { ScopeManager } from '../ScopeManager';
 import { Variable } from '../Variable';
-import { VariableType } from '../VariableType';
+import { ImplicitGlobalVariableDefinition } from '../definition/ImplicitGlobalVariableDefinition';
 
 class GlobalScope extends ScopeBase {
   declare type: ScopeType.global;
@@ -43,14 +43,7 @@ class GlobalScope extends ScopeBase {
       const info = implicit[i];
       this.__defineImplicit(
         info.pattern,
-        new Definition(
-          VariableType.ImplicitGlobalVariable,
-          info.pattern,
-          info.node,
-          null,
-          null,
-          null,
-        ),
+        new ImplicitGlobalVariableDefinition(info.pattern, info.node),
       );
     }
     this.implicit.left = this.__left!;

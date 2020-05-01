@@ -2,7 +2,17 @@ import {
   TSESTree,
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
-import { Definition, ParameterDefinition } from '../../../src/definition';
+import {
+  CatchClauseDefinition,
+  ClassNameDefinition,
+  Definition,
+  DefinitionType,
+  FunctionNameDefinition,
+  ImplicitGlobalVariableDefinition,
+  ImportBindingDefinition,
+  ParameterDefinition,
+  VariableDefinition,
+} from '../../../src/definition';
 import {
   BlockScope,
   CatchScope,
@@ -17,6 +27,10 @@ import {
   SwitchScope,
   WithScope,
 } from '../../../src/scope';
+
+//////////////////
+// EXPECT SCOPE //
+//////////////////
 
 function expectToBeBlockScope(scope: Scope): asserts scope is BlockScope {
   expect(scope.type).toBe(ScopeType.block);
@@ -51,18 +65,6 @@ function expectToBeWithScope(scope: Scope): asserts scope is WithScope {
   expect(scope.type).toBe(ScopeType.with);
 }
 
-function expectToBeIdentifier(
-  node: TSESTree.Node | null | undefined,
-): asserts node is TSESTree.Identifier {
-  expect(node?.type).toBe(AST_NODE_TYPES.Identifier);
-}
-
-function expectToBeParameterDefinitionWithRest(def: Definition): void {
-  expect(def).toBeInstanceOf(ParameterDefinition);
-  const paramDef = def as ParameterDefinition;
-  expect(paramDef.rest).toBeTruthy();
-}
-
 export {
   expectToBeBlockScope,
   expectToBeCatchScope,
@@ -72,8 +74,68 @@ export {
   expectToBeFunctionScope,
   expectToBeGlobalScope,
   expectToBeModuleScope,
-  expectToBeParameterDefinitionWithRest,
   expectToBeSwitchScope,
   expectToBeWithScope,
-  expectToBeIdentifier,
 };
+
+///////////////////////
+// EXPECT DEFINITION //
+///////////////////////
+
+function expectToBeCatchClauseDefinition(
+  def: Definition,
+): asserts def is CatchClauseDefinition {
+  expect(def.type).toBe(DefinitionType.CatchClause);
+}
+function expectToBeClassNameDefinition(
+  def: Definition,
+): asserts def is ClassNameDefinition {
+  expect(def.type).toBe(DefinitionType.ClassName);
+}
+function expectToBeFunctionNameDefinition(
+  def: Definition,
+): asserts def is FunctionNameDefinition {
+  expect(def.type).toBe(DefinitionType.FunctionName);
+}
+function expectToBeImplicitGlobalVariableDefinition(
+  def: Definition,
+): asserts def is ImplicitGlobalVariableDefinition {
+  expect(def.type).toBe(DefinitionType.ImplicitGlobalVariable);
+}
+function expectToBeImportBindingDefinition(
+  def: Definition,
+): asserts def is ImportBindingDefinition {
+  expect(def.type).toBe(DefinitionType.ImportBinding);
+}
+function expectToBeParameterDefinition(
+  def: Definition,
+): asserts def is ParameterDefinition {
+  expect(def.type).toBe(DefinitionType.Parameter);
+}
+function expectToBeVariableDefinition(
+  def: Definition,
+): asserts def is VariableDefinition {
+  expect(def.type).toBe(DefinitionType.Variable);
+}
+
+export {
+  expectToBeCatchClauseDefinition,
+  expectToBeClassNameDefinition,
+  expectToBeFunctionNameDefinition,
+  expectToBeImplicitGlobalVariableDefinition,
+  expectToBeImportBindingDefinition,
+  expectToBeParameterDefinition,
+  expectToBeVariableDefinition,
+};
+
+/////////////////
+// EXPECT MISC //
+/////////////////
+
+function expectToBeIdentifier(
+  node: TSESTree.Node | null | undefined,
+): asserts node is TSESTree.Identifier {
+  expect(node?.type).toBe(AST_NODE_TYPES.Identifier);
+}
+
+export { expectToBeIdentifier };

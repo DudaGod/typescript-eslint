@@ -3,7 +3,7 @@ import {
   expectToBeFunctionScope,
   expectToBeGlobalScope,
   expectToBeIdentifier,
-  expectToBeParameterDefinitionWithRest,
+  expectToBeParameterDefinition,
 } from './util/expect';
 import { parse } from './util/parse';
 import { analyze } from '../../src/analyze';
@@ -33,6 +33,7 @@ describe('ES6 rest arguments', () => {
     expect(scope.variables[1].name).toBe('bar');
     expectToBeIdentifier(scope.variables[1].defs[0].name);
     expect(scope.variables[1].defs[0].name.name).toBe('bar');
-    expectToBeParameterDefinitionWithRest(scope.variables[1].defs[0]);
+    expectToBeParameterDefinition(scope.variables[1].defs[0]);
+    expect(scope.variables[1].defs[0].rest).toBeTruthy();
   });
 });

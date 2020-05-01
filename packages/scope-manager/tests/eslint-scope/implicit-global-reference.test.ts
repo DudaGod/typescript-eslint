@@ -1,7 +1,7 @@
 import { expectToBeGlobalScope } from './util/expect';
 import { parse } from './util/parse';
 import { analyze } from '../../src/analyze';
-import { VariableType } from '../../src/VariableType';
+import { DefinitionType } from '../../src/definition';
 
 describe('implicit global reference', () => {
   it('assignments global scope', () => {
@@ -16,7 +16,7 @@ describe('implicit global reference', () => {
       scopes.map(scope =>
         scope.variables.map(variable => variable.defs.map(def => def.type)),
       ),
-    ).toEqual([[[VariableType.Variable]]]);
+    ).toEqual([[[DefinitionType.Variable]]]);
 
     expectToBeGlobalScope(scopes[0]);
     expect(
@@ -58,7 +58,7 @@ describe('implicit global reference', () => {
       scopes.map(scope =>
         scope.variables.map(variable => variable.defs.map(def => def.type)),
       ),
-    ).toEqual([[[VariableType.FunctionName]], [[]]]);
+    ).toEqual([[[DefinitionType.FunctionName]], [[]]]);
 
     expectToBeGlobalScope(scopes[0]);
     expect(

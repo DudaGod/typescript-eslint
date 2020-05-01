@@ -3,7 +3,14 @@ import {
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
 import assert from 'assert';
-import { Definition, ParameterDefinition } from './definition';
+import {
+  CatchClauseDefinition,
+  ClassNameDefinition,
+  FunctionNameDefinition,
+  ImportBindingDefinition,
+  ParameterDefinition,
+  VariableDefinition,
+} from './definition';
 import {
   PatternVisitor,
   PatternVisitorCallback,
@@ -12,7 +19,6 @@ import {
 import { ReferenceFlag, ReferenceImplicitGlobal } from './Reference';
 import { Scope } from './scope';
 import { ScopeManager } from './ScopeManager';
-import { VariableType } from './VariableType';
 import { Visitor, VisitorOptions } from './Visitor';
 import { FunctionScope } from './scope/FunctionScope';
 
@@ -64,14 +70,7 @@ class Importer extends Visitor {
         .currentScope(true)
         .__define(
           pattern,
-          new Definition(
-            VariableType.ImportBinding,
-            pattern,
-            specifier,
-            this.declaration,
-            null,
-            null,
-          ),
+          new ImportBindingDefinition(pattern, specifier, this.declaration),
         );
     });
   }
@@ -198,14 +197,7 @@ class Referencer extends Visitor {
       // id is defined in upper scope
       this.currentScope(true).__define(
         node.id,
-        new Definition(
-          VariableType.FunctionName,
-          node.id,
-          node,
-          null,
-          null,
-          null,
-        ),
+        new FunctionNameDefinition(node.id, node),
       );
     }
 
@@ -254,7 +246,7 @@ class Referencer extends Visitor {
     if (node.type === AST_NODE_TYPES.ClassDeclaration && node.id) {
       this.currentScope(true).__define(
         node.id,
-        new Definition(VariableType.ClassName, node.id, node, null, null, null),
+        new ClassNameDefinition(node.id, node),
       );
     }
 
@@ -265,7 +257,7 @@ class Referencer extends Visitor {
     if (node.id) {
       this.currentScope(true).__define(
         node.id,
-        new Definition(VariableType.ClassName, node.id, node),
+        new ClassNameDefinition(node.id, node),
       );
     }
     this.visit(node.body);
@@ -354,7 +346,6 @@ class Referencer extends Visitor {
 
   visitVariableDeclaration(
     variableTargetScope: Scope,
-    type: VariableType.Variable,
     node: TSESTree.VariableDeclaration,
     index: number,
   ): void {
@@ -367,7 +358,7 @@ class Referencer extends Visitor {
       (pattern, info) => {
         variableTargetScope.__define(
           pattern,
-          new Definition(type, pattern, decl, node, index, node.kind),
+          new VariableDefinition(pattern, decl, node, index, node.kind),
         );
 
         this.referencingDefaultValue(pattern, info.assignments, null, true);
@@ -440,14 +431,7 @@ class Referencer extends Visitor {
         (pattern, info) => {
           this.currentScope(true).__define(
             pattern,
-            new Definition(
-              VariableType.CatchClause,
-              param,
-              node,
-              null,
-              null,
-              null,
-            ),
+            new CatchClauseDefinition(param, node),
           );
           this.referencingDefaultValue(pattern, info.assignments, null, true);
         },
@@ -584,12 +568,7 @@ class Referencer extends Visitor {
     for (let i = 0, iz = node.declarations.length; i < iz; ++i) {
       const decl = node.declarations[i];
 
-      this.visitVariableDeclaration(
-        variableTargetScope,
-        VariableType.Variable,
-        node,
-        i,
-      );
+      this.visitVariableDeclaration(variableTargetScope, node, i);
       if (decl.init) {
         this.visit(decl.init);
       }

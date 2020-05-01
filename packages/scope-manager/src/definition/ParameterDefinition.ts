@@ -1,12 +1,12 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { VariableType } from '../VariableType';
-import { Definition } from './Definition';
+import { DefinitionType } from './DefinitionType';
+import { DefinitionBase } from './DefinitionBase';
 
-class ParameterDefinition extends Definition {
-  declare type: VariableType.Parameter;
+class ParameterDefinition extends DefinitionBase {
+  declare type: DefinitionType.Parameter;
+
   /**
    * Whether the parameter definition is a part of a rest parameter.
-   * @member {boolean} ParameterDefinition#rest
    */
   public readonly rest: boolean;
   constructor(
@@ -15,7 +15,7 @@ class ParameterDefinition extends Definition {
     index: number,
     rest: boolean,
   ) {
-    super(VariableType.Parameter, name, node, null, index, null);
+    super(DefinitionType.Parameter, name, node, null, index, null);
     this.rest = rest;
   }
 }
