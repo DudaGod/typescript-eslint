@@ -1,17 +1,19 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
 import assert from 'assert';
-import { Scope } from './scope';
-import { Scopes } from './scope/Scopes';
-import { ClassScope } from './scope/ClassScope';
-import { ForScope } from './scope/ForScope';
-import { FunctionScope } from './scope/FunctionScope';
-import { SwitchScope } from './scope/SwitchScope';
-import { BlockScope } from './scope/BlockScope';
-import { WithScope } from './scope/WithScope';
-import { CatchScope } from './scope/CatchScope';
-import { FunctionExpressionNameScope } from './scope/FunctionExpressionNameScope';
-import { ModuleScope } from './scope/ModuleScope';
-import { GlobalScope } from './scope/GlobalScope';
+import {
+  BlockScope,
+  CatchScope,
+  ClassScope,
+  ForScope,
+  FunctionExpressionNameScope,
+  FunctionScope,
+  GlobalScope,
+  ModuleScope,
+  Scope,
+  SwitchScope,
+  WithScope,
+} from './scope';
+
 import { Variable } from './Variable';
 
 interface ScopeManagerOptions {
@@ -22,7 +24,7 @@ interface ScopeManagerOptions {
 }
 
 class ScopeManager {
-  public scopes: Scopes[];
+  public scopes: Scope[];
   public globalScope: GlobalScope | null;
   private __options: ScopeManagerOptions;
   public __currentScope: Scope | null;

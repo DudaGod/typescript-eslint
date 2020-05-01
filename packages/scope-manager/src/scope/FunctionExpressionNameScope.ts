@@ -2,7 +2,7 @@ import { TSESTree } from '@typescript-eslint/experimental-utils';
 import { Scope } from '.';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
-import { Definition } from '../Definition';
+import { Definition } from '../definition';
 import { VariableType } from '../VariableType';
 import { ScopeManager } from '../ScopeManager';
 

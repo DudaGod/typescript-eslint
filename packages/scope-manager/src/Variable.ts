@@ -1,5 +1,5 @@
-import { Definition } from './Definition';
 import { TSESTree } from '@typescript-eslint/experimental-utils';
+import { Definition } from './definition';
 import { Reference } from './Reference';
 import { Scope } from './scope';
 

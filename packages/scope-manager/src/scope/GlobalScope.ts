@@ -4,7 +4,7 @@ import {
 } from '@typescript-eslint/experimental-utils';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
-import { Definition } from '../Definition';
+import { Definition } from '../definition';
 import { Reference } from '../Reference';
 import { ScopeManager } from '../ScopeManager';
 import { Variable } from '../Variable';

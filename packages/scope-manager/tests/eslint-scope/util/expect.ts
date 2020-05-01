@@ -2,52 +2,52 @@ import {
   TSESTree,
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
-import { Definition, ParameterDefinition } from '../../../src/Definition';
-import { BlockScope } from '../../../src/scope/BlockScope';
-import { CatchScope } from '../../../src/scope/CatchScope';
-import { ClassScope } from '../../../src/scope/ClassScope';
-import { ForScope } from '../../../src/scope/ForScope';
-import { FunctionScope } from '../../../src/scope/FunctionScope';
-import { FunctionExpressionNameScope } from '../../../src/scope/FunctionExpressionNameScope';
-import { GlobalScope } from '../../../src/scope/GlobalScope';
-import { ModuleScope } from '../../../src/scope/ModuleScope';
-import { Scopes } from '../../../src/scope/Scopes';
-import { ScopeType } from '../../../src/scope/ScopeType';
-import { SwitchScope } from '../../../src/scope/SwitchScope';
-import { WithScope } from '../../../src/scope/WithScope';
+import { Definition, ParameterDefinition } from '../../../src/definition';
+import {
+  BlockScope,
+  CatchScope,
+  ClassScope,
+  ForScope,
+  FunctionExpressionNameScope,
+  FunctionScope,
+  GlobalScope,
+  ModuleScope,
+  Scope,
+  ScopeType,
+  SwitchScope,
+  WithScope,
+} from '../../../src/scope';
 
-function expectToBeBlockScope(scope: Scopes): asserts scope is BlockScope {
+function expectToBeBlockScope(scope: Scope): asserts scope is BlockScope {
   expect(scope.type).toBe(ScopeType.block);
 }
-function expectToBeCatchScope(scope: Scopes): asserts scope is CatchScope {
+function expectToBeCatchScope(scope: Scope): asserts scope is CatchScope {
   expect(scope.type).toBe(ScopeType.catch);
 }
-function expectToBeClassScope(scope: Scopes): asserts scope is ClassScope {
+function expectToBeClassScope(scope: Scope): asserts scope is ClassScope {
   expect(scope.type).toBe(ScopeType.class);
 }
-function expectToBeForScope(scope: Scopes): asserts scope is ForScope {
+function expectToBeForScope(scope: Scope): asserts scope is ForScope {
   expect(scope.type).toBe(ScopeType.for);
 }
-function expectToBeFunctionScope(
-  scope: Scopes,
-): asserts scope is FunctionScope {
+function expectToBeFunctionScope(scope: Scope): asserts scope is FunctionScope {
   expect(scope.type).toBe(ScopeType.function);
 }
 function expectToBeFunctionExpressionNameScope(
-  scope: Scopes,
+  scope: Scope,
 ): asserts scope is FunctionExpressionNameScope {
   expect(scope.type).toBe(ScopeType.functionExpressionName);
 }
-function expectToBeGlobalScope(scope: Scopes): asserts scope is GlobalScope {
+function expectToBeGlobalScope(scope: Scope): asserts scope is GlobalScope {
   expect(scope.type).toBe(ScopeType.global);
 }
-function expectToBeModuleScope(scope: Scopes): asserts scope is ModuleScope {
+function expectToBeModuleScope(scope: Scope): asserts scope is ModuleScope {
   expect(scope.type).toBe(ScopeType.module);
 }
-function expectToBeSwitchScope(scope: Scopes): asserts scope is SwitchScope {
+function expectToBeSwitchScope(scope: Scope): asserts scope is SwitchScope {
   expect(scope.type).toBe(ScopeType.switch);
 }
-function expectToBeWithScope(scope: Scopes): asserts scope is WithScope {
+function expectToBeWithScope(scope: Scope): asserts scope is WithScope {
   expect(scope.type).toBe(ScopeType.with);
 }
 

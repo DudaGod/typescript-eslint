@@ -3,7 +3,7 @@ import {
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
 import assert from 'assert';
-import { Definition, ParameterDefinition } from './Definition';
+import { Definition, ParameterDefinition } from './definition';
 import {
   PatternVisitor,
   PatternVisitorCallback,
@@ -523,8 +523,7 @@ class Referencer extends Visitor {
 
   ForStatement(node: TSESTree.ForStatement): void {
     // Create ForStatement declaration.
-    // NOTE: In ES6, ForStatement dynamically generates
-    // per iteration environment. However, escope is
+    // NOTE: In ES6, ForStatement dynamically generates per iteration environment. However, this is
     // a static analyzer, we only generate one scope for ForStatement.
     if (
       node.init &&

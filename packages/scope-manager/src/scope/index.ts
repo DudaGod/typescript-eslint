@@ -1,1 +1,12 @@
+export { BlockScope } from './BlockScope';
+export { CatchScope } from './CatchScope';
+export { ClassScope } from './ClassScope';
+export { ForScope } from './ForScope';
+export { FunctionExpressionNameScope } from './FunctionExpressionNameScope';
+export { FunctionScope } from './FunctionScope';
+export { GlobalScope } from './GlobalScope';
+export { ModuleScope } from './ModuleScope';
 export { Scopes as Scope } from './Scopes';
+export { ScopeType } from './ScopeType';
+export { SwitchScope } from './SwitchScope';
+export { WithScope } from './WithScope';

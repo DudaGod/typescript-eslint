@@ -6,7 +6,7 @@ import {
 import { FunctionScope } from './FunctionScope';
 import { GlobalScope } from './GlobalScope';
 import { ScopeType } from './ScopeType';
-import { Definition } from '../Definition';
+import { Definition } from '../definition';
 import {
   Reference,
   ReferenceFlag,
