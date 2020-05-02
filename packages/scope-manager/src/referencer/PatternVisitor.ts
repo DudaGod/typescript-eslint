@@ -15,7 +15,15 @@ type PatternVisitorCallback = (
 
 type PatternVisitorOptions = VisitorOptions;
 class PatternVisitor extends Visitor {
-  static isPattern(node: TSESTree.Node): boolean {
+  static isPattern(
+    node: TSESTree.Node,
+  ): node is
+    | TSESTree.Identifier
+    | TSESTree.ObjectPattern
+    | TSESTree.ArrayPattern
+    | TSESTree.SpreadElement
+    | TSESTree.RestElement
+    | TSESTree.AssignmentPattern {
     const nodeType = node.type;
 
     return (

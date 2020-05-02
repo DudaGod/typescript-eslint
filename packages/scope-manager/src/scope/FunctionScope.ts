@@ -5,8 +5,8 @@ import {
 import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
+import { Reference } from '../referencer/Reference';
 import { ScopeManager } from '../ScopeManager';
-import { Reference } from '../Reference';
 import { Variable } from '../Variable';
 
 class FunctionScope extends ScopeBase<

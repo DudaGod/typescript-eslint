@@ -5,10 +5,10 @@ import {
 import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
-import { Reference } from '../Reference';
+import { ImplicitGlobalVariableDefinition } from '../definition/ImplicitGlobalVariableDefinition';
+import { Reference } from '../referencer/Reference';
 import { ScopeManager } from '../ScopeManager';
 import { Variable } from '../Variable';
-import { ImplicitGlobalVariableDefinition } from '../definition/ImplicitGlobalVariableDefinition';
 
 class GlobalScope extends ScopeBase<
   ScopeType.global,

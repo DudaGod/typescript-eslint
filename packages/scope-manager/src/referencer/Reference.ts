@@ -1,6 +1,6 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Scope } from './scope';
-import { Variable } from './Variable';
+import { Scope } from '../scope';
+import { Variable } from '../Variable';
 
 enum ReferenceFlag {
   READ = 0x1,
@@ -50,29 +50,11 @@ class Reference {
 
   public maybeImplicitGlobal?: ReferenceImplicitGlobal | null;
 
-  constructor(
-    identifier: TSESTree.Identifier,
-    scope: Scope,
-    flag: ReferenceFlag.READ,
-  );
-  constructor(
-    identifier: TSESTree.Identifier,
-    scope: Scope,
-    flag: ReferenceFlag.WRITE | ReferenceFlag.RW,
-    writeExpr: TSESTree.Node | null,
-    maybeImplicitGlobal: ReferenceImplicitGlobal | null,
-    partial: boolean,
-    init: boolean,
-  );
-  constructor(
-    identifier: TSESTree.Identifier,
-    scope: Scope,
-    flag: ReferenceFlag,
-    writeExpr?: TSESTree.Node | null,
-    maybeImplicitGlobal?: ReferenceImplicitGlobal | null,
-    partial?: boolean,
-    init?: boolean,
-  );
+  /**
+   * True if this reference was created from a type context, false otherwise
+   */
+  public readonly isTypeReference: boolean;
+
   constructor(
     identifier: TSESTree.Identifier,
     scope: Scope,
@@ -80,6 +62,7 @@ class Reference {
     writeExpr?: TSESTree.Node | null,
     maybeImplicitGlobal?: ReferenceImplicitGlobal | null,
     init?: boolean,
+    isTypeReference = false,
   ) {
     this.identifier = identifier;
     this.from = scope;
@@ -92,6 +75,7 @@ class Reference {
     }
 
     this.maybeImplicitGlobal = maybeImplicitGlobal;
+    this.isTypeReference = isTypeReference;
   }
 
   /**

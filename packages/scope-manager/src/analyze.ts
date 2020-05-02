@@ -1,6 +1,6 @@
 import { TSESLint, TSESTree } from '@typescript-eslint/experimental-utils';
+import { Referencer, ReferencerOptions } from './referencer';
 import { ScopeManager } from './ScopeManager';
-import { Referencer, ReferencerOptions } from './Referencer';
 
 interface Options {
   /**
@@ -59,7 +59,7 @@ function analyze(tree: TSESTree.Node, providedOptions?: Options): ScopeManager {
 }
 
 export * from './definition';
-export { Reference } from './Reference';
+export { Reference } from './referencer/Reference';
 export * from './scope';
 export { ScopeManager } from './ScopeManager';
 export { Variable } from './Variable';

@@ -13,7 +13,7 @@ import {
   Reference,
   ReferenceFlag,
   ReferenceImplicitGlobal,
-} from '../Reference';
+} from '../referencer/Reference';
 import { Variable } from '../Variable';
 
 /**
@@ -114,10 +114,11 @@ function registerScope(scopeManager: ScopeManager, scope: Scope): void {
 }
 
 /**
- * Should be statically
+ * Should the def be statically closed
  */
-function shouldBeStatically(def: Definition): boolean {
+function shouldBeStaticallyClosed(def: Definition): boolean {
   return (
+    def.type === DefinitionType.Type ||
     def.type === DefinitionType.ClassName ||
     (def.type === DefinitionType.Variable &&
       def.parent?.type === AST_NODE_TYPES.VariableDeclaration &&
@@ -255,7 +256,9 @@ abstract class ScopeBase<
     const variable = this.set.get(name);
     const defs = variable?.defs;
 
-    return defs != null && defs.length > 0 && defs.every(shouldBeStatically);
+    return (
+      defs != null && defs.length > 0 && defs.every(shouldBeStaticallyClosed)
+    );
   }
 
   private staticCloseRef = (ref: Reference): void => {
@@ -270,6 +273,12 @@ abstract class ScopeBase<
       if (!this.isValidResolution(ref, variable)) {
         return false;
       }
+
+      // make sure we don't match a type reference to a value variable
+      if (ref.isTypeReference && !variable.isTypeVariable()) {
+        return false;
+      }
+
       variable.references.push(ref);
       ref.resolved = variable;
 
@@ -365,9 +374,7 @@ abstract class ScopeBase<
     node: TSESTree.Identifier | null,
     def: Definition | null,
   ): void {
-    let variable;
-
-    variable = set.get(name);
+    let variable = set.get(name);
     if (!variable) {
       variable = new Variable(name, this as Scope);
       set.set(name, variable);
@@ -384,39 +391,40 @@ abstract class ScopeBase<
     }
   }
 
-  public defineIdentifier(
-    node: TSESTree.Identifier | null,
-    def: Definition,
-  ): void {
-    if (node) {
-      this.defineVariable(node.name, this.set, this.variables, node, def);
-    }
+  public defineIdentifier(node: TSESTree.Identifier, def: Definition): void {
+    this.defineVariable(node.name, this.set, this.variables, node, def);
   }
 
-  public referencing(
-    node: TSESTree.Node,
-    assign?: ReferenceFlag,
+  public referenceValue(
+    node: TSESTree.Identifier,
+    assign: ReferenceFlag = ReferenceFlag.READ,
     writeExpr?: TSESTree.Expression | null,
     maybeImplicitGlobal?: ReferenceImplicitGlobal | null,
-    init?: boolean,
+    init = false,
   ): void {
-    // because Array element may be null
-    if (!node || node.type !== AST_NODE_TYPES.Identifier) {
-      return;
-    }
-
-    // Specially handle like `this`.
-    if (node.name === 'super') {
-      return;
-    }
-
     const ref = new Reference(
       node,
       this as Scope,
-      assign ?? ReferenceFlag.READ,
+      assign,
       writeExpr,
       maybeImplicitGlobal,
-      !!init,
+      init,
+      false,
+    );
+
+    this.references.push(ref);
+    this.left?.push(ref);
+  }
+
+  public referenceType(node: TSESTree.Identifier): void {
+    const ref = new Reference(
+      node,
+      this as Scope,
+      ReferenceFlag.READ,
+      null,
+      null,
+      false,
+      true,
     );
 
     this.references.push(ref);

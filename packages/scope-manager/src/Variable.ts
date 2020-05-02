@@ -1,6 +1,10 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import { Definition } from './definition';
-import { Reference } from './Reference';
+import {
+  Definition,
+  TypeDefinitionTypes,
+  ValueDefinitionTypes,
+} from './definition';
+import { Reference } from './referencer/Reference';
 import { Scope } from './scope';
 
 /**
@@ -42,6 +46,20 @@ class Variable {
   constructor(name: string, scope: Scope) {
     this.name = name;
     this.scope = scope;
+  }
+
+  /**
+   * `true` if the variable is valid in a type context, false otherwise
+   */
+  public isTypeVariable(): boolean {
+    return this.defs.some(def => TypeDefinitionTypes.has(def.type));
+  }
+
+  /**
+   * `true` if the variable is valid in a value context, false otherwise
+   */
+  public isValueVariable(): boolean {
+    return this.defs.some(def => ValueDefinitionTypes.has(def.type));
   }
 }
 
