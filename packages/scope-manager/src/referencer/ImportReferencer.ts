@@ -20,14 +20,12 @@ class ImportReferencer extends Visitor {
       | TSESTree.ImportNamespaceSpecifier
       | TSESTree.ImportSpecifier,
   ): void {
-    this.referencer.visitPattern(id, pattern => {
-      this.referencer
-        .currentScope()
-        .defineIdentifier(
-          pattern,
-          new ImportBindingDefinition(pattern, specifier, this.declaration),
-        );
-    });
+    this.referencer
+      .currentScope()
+      .defineIdentifier(
+        id,
+        new ImportBindingDefinition(id, specifier, this.declaration),
+      );
   }
 
   ImportNamespaceSpecifier(node: TSESTree.ImportNamespaceSpecifier): void {
