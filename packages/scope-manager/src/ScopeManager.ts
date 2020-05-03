@@ -18,7 +18,7 @@ import {
 import { Variable } from './Variable';
 
 interface ScopeManagerOptions {
-  gloablReturn?: boolean;
+  globalReturn?: boolean;
   sourceType?: 'module' | 'script';
   impliedStrict?: boolean;
   ecmaVersion?: number;
@@ -50,7 +50,7 @@ class ScopeManager {
   }
 
   public isGlobalReturn(): boolean {
-    return this.options.gloablReturn === true;
+    return this.options.globalReturn === true;
   }
 
   public isModule(): boolean {

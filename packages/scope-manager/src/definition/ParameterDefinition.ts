@@ -4,9 +4,11 @@ import { DefinitionBase } from './DefinitionBase';
 
 class ParameterDefinition extends DefinitionBase<
   DefinitionType.Parameter,
+  | TSESTree.ArrowFunctionExpression
   | TSESTree.FunctionDeclaration
   | TSESTree.FunctionExpression
-  | TSESTree.ArrowFunctionExpression,
+  | TSESTree.TSDeclareFunction
+  | TSESTree.TSEmptyBodyFunctionExpression,
   null
 > {
   /**

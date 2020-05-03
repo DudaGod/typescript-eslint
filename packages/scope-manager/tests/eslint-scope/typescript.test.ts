@@ -1,32 +1,43 @@
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
-import { expectToBeFunctionScope, expectToBeGlobalScope } from '../util/expect';
+import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
+import {
+  expectToBeFunctionScope,
+  expectToBeGlobalScope,
+  parseAndAnalyze,
+} from '../util';
 
 describe('typescript', () => {
   describe('multiple call signatures', () => {
     it('should create a function scope', () => {
-      const ast = parse(`
-                function foo(bar: number): number;
-                function foo(bar: string): string;
-                function foo(bar: string | number): string | number {
-                    return bar;
-                }
-            `);
+      const { scopeManager } = parseAndAnalyze(
+        `
+          function foo(bar: number): number;
+          function foo(bar: string): string;
+          function foo(bar: string | number): string | number {
+            return bar;
+          }
+        `,
+        'script',
+      );
 
-      const scopeManager = analyze(ast);
-
-      expect(scopeManager.scopes).toHaveLength(2);
+      expect(scopeManager.scopes).toHaveLength(4);
 
       let scope = scopeManager.scopes[0];
       expectToBeGlobalScope(scope);
+      expect(scope.references).toHaveLength(0);
       expect(scope.variables).toHaveLength(1);
-      expect(scope.references).toHaveLength(4);
+      expect(scope.variables[0].defs).toHaveLength(3);
 
-      scope = scopeManager.scopes[1];
-      expectToBeFunctionScope(scope);
-      expect(scope.variables).toHaveLength(2);
-      expect(scope.variables[0].name).toBe('arguments');
-      expect(scope.references).toHaveLength(1);
+      for (let i = 1; i < 4; i += 1) {
+        scope = scopeManager.scopes[i];
+        expectToBeFunctionScope(scope);
+        expect(scope.variables).toHaveLength(2);
+        expect(scope.variables[0].name).toBe('arguments');
+        if (scope.block.type === AST_NODE_TYPES.TSDeclareFunction) {
+          expect(scope.references).toHaveLength(0);
+        } else {
+          expect(scope.references).toHaveLength(1);
+        }
+      }
     });
   });
 });

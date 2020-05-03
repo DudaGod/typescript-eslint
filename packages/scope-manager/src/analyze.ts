@@ -6,12 +6,12 @@ import {
 import { Referencer, ReferencerOptions } from './referencer';
 import { ScopeManager } from './ScopeManager';
 
-interface Options {
+interface AnalyzeOptions {
   /**
    * whether the whole script is executed under node.js environment.
    * When enabled, the scope manager adds a function scope immediately following the global scope.
    */
-  gloablReturn?: boolean;
+  globalReturn?: boolean;
 
   /**
    * implied strict mode (if ecmaVersion >= 5).
@@ -40,8 +40,8 @@ interface Options {
   fallback?: ReferencerOptions['fallback'];
 }
 
-const DEFAULT_OPTIONS: Options = {
-  gloablReturn: false,
+const DEFAULT_OPTIONS: AnalyzeOptions = {
+  globalReturn: false,
   impliedStrict: false,
   sourceType: 'script',
   ecmaVersion: 2018,
@@ -52,7 +52,10 @@ const DEFAULT_OPTIONS: Options = {
 /**
  * Takes an AST and returns the analyzed scopes.
  */
-function analyze(tree: TSESTree.Node, providedOptions?: Options): ScopeManager {
+function analyze(
+  tree: TSESTree.Node,
+  providedOptions?: AnalyzeOptions,
+): ScopeManager {
   const options = Object.assign({}, DEFAULT_OPTIONS, providedOptions);
   const scopeManager = new ScopeManager(options);
   const referencer = new Referencer(options, scopeManager);
@@ -67,4 +70,4 @@ export { Reference } from './referencer/Reference';
 export * from './scope';
 export { ScopeManager } from './ScopeManager';
 export { Variable } from './Variable';
-export { analyze };
+export { analyze, AnalyzeOptions };

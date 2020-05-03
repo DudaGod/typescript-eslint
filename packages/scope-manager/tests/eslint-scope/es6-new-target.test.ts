@@ -1,19 +1,15 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { expectToBeFunctionScope } from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+import { expectToBeFunctionScope, parseAndAnalyze } from '../util';
 
 describe('ES6 new.target', () => {
   it('should not make references of new.target', () => {
-    const ast = parse(`
-            class A {
-                constructor() {
-                    new.target;
-                }
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      class A {
+        constructor() {
+          new.target;
+        }
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 

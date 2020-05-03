@@ -1,17 +1,18 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { expectToBeFunctionScope, expectToBeGlobalScope } from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+import {
+  expectToBeFunctionScope,
+  expectToBeGlobalScope,
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 object', () => {
   it('method definition', () => {
-    const ast = parse(`
-            ({
-                constructor() {
-                }
-            })`);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      ({
+        constructor() {
+        }
+      })
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -30,20 +31,18 @@ describe('ES6 object', () => {
   });
 
   it('computed property key may refer variables', () => {
-    const ast = parse(`
-            (function () {
-                var yuyushiki = 42;
-                ({
-                    [yuyushiki]() {
-                    },
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        var yuyushiki = 42;
+        ({
+          [yuyushiki]() {
+          },
 
-                    [yuyushiki + 40]() {
-                    }
-                })
-            }());
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+          [yuyushiki + 40]() {
+          }
+        })
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(4);
 

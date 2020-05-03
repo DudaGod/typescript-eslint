@@ -3,21 +3,24 @@ import {
   expectToBeFunctionScope,
   expectToBeGlobalScope,
   expectToBeModuleScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('impliedStrict option', () => {
   it('ensures all user scopes are strict if ecmaVersion >= 5', () => {
-    const ast = parse(`
-            function foo() {
-                function bar() {
-                    "use strict";
-                }
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 5, impliedStrict: true });
+    const { scopeManager } = parseAndAnalyze(
+      `
+        function foo() {
+          function bar() {
+            "use strict";
+          }
+        }
+      `,
+      {
+        ecmaVersion: 5,
+        impliedStrict: true,
+      },
+    );
 
     expect(scopeManager.scopes).toHaveLength(3);
 
@@ -39,11 +42,15 @@ describe('impliedStrict option', () => {
   });
 
   it('ensures impliedStrict option is only effective when ecmaVersion option >= 5', () => {
-    const ast = parse(`
-            function foo() {}
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 3, impliedStrict: true });
+    const { scopeManager } = parseAndAnalyze(
+      `
+        function foo() {}
+      `,
+      {
+        ecmaVersion: 3,
+        impliedStrict: true,
+      },
+    );
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -60,15 +67,16 @@ describe('impliedStrict option', () => {
   });
 
   it('omits a nodejs global scope when ensuring all user scopes are strict', () => {
-    const ast = parse(`
-            function foo() {}
-        `);
-
-    const scopeManager = analyze(ast, {
-      ecmaVersion: 5,
-      gloablReturn: true,
-      impliedStrict: true,
-    });
+    const { scopeManager } = parseAndAnalyze(
+      `
+        function foo() {}
+      `,
+      {
+        ecmaVersion: 5,
+        globalReturn: true,
+        impliedStrict: true,
+      },
+    );
 
     expect(scopeManager.scopes).toHaveLength(3);
 
@@ -90,9 +98,7 @@ describe('impliedStrict option', () => {
   });
 
   it('omits a module global scope when ensuring all user scopes are strict', () => {
-    const ast = parse('function foo() {}');
-
-    const scopeManager = analyze(ast, {
+    const { scopeManager } = parseAndAnalyze('function foo() {}', {
       ecmaVersion: 6,
       impliedStrict: true,
       sourceType: 'module',

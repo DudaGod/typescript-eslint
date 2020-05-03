@@ -1,18 +1,15 @@
-import { parse } from '../util/parse';
+import { parseAndAnalyze } from '../util/parse';
 import {
   expectToBeGlobalScope,
   expectToBeImportBindingDefinition,
   expectToBeModuleScope,
   expectToBeVariableDefinition,
-} from '../util/expect';
-import { analyze } from '../../src/analyze';
+} from '../util';
 
 describe('import declaration', () => {
   // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-static-and-runtme-semantics-module-records
   it('should import names from source', () => {
-    const ast = parse('import v from "mod";');
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6, sourceType: 'module' });
+    const { scopeManager } = parseAndAnalyze('import v from "mod";', 'module');
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -31,9 +28,10 @@ describe('import declaration', () => {
   });
 
   it('should import namespaces', () => {
-    const ast = parse('import * as ns from "mod";');
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6, sourceType: 'module' });
+    const { scopeManager } = parseAndAnalyze(
+      'import * as ns from "mod";',
+      'module',
+    );
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -52,9 +50,10 @@ describe('import declaration', () => {
   });
 
   it('should import insided names#1', () => {
-    const ast = parse('import {x} from "mod";');
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6, sourceType: 'module' });
+    const { scopeManager } = parseAndAnalyze(
+      'import {x} from "mod";',
+      'module',
+    );
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -73,9 +72,10 @@ describe('import declaration', () => {
   });
 
   it('should import insided names#2', () => {
-    const ast = parse('import {x as v} from "mod";');
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6, sourceType: 'module' });
+    const { scopeManager } = parseAndAnalyze(
+      'import {x as v} from "mod";',
+      'module',
+    );
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -100,15 +100,13 @@ describe('import declaration', () => {
       'import * as v from "mod";',
     ];
     for (const code of imports) {
-      const ast = parse(`
-        ${code}
-        const x = v;
-      `);
-
-      const scopeManager = analyze(ast, {
-        ecmaVersion: 6,
-        sourceType: 'module',
-      });
+      const { scopeManager } = parseAndAnalyze(
+        `
+          ${code}
+          const x = v;
+        `,
+        'module',
+      );
 
       expect(scopeManager.scopes).toHaveLength(2);
 

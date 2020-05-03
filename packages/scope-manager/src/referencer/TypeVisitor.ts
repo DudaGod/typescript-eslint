@@ -6,7 +6,7 @@ import { Referencer } from './Referencer';
 import { Visitor } from './Visitor';
 import { TypeDefinition } from '../definition';
 
-class TypeReferencer extends Visitor {
+class TypeVisitor extends Visitor {
   public readonly referencer: Referencer;
 
   constructor(referencer: Referencer) {
@@ -31,7 +31,7 @@ class TypeReferencer extends Visitor {
   }
 
   static visit(referencer: Referencer, node: TSESTree.Node): void {
-    const typeReferencer = new TypeReferencer(referencer);
+    const typeReferencer = new TypeVisitor(referencer);
     typeReferencer.visit(node);
   }
 
@@ -80,4 +80,4 @@ class TypeReferencer extends Visitor {
   }
 }
 
-export { TypeReferencer };
+export { TypeVisitor };

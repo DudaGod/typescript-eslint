@@ -1,19 +1,19 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { expectToBeFunctionScope, expectToBeGlobalScope } from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+import {
+  expectToBeFunctionScope,
+  expectToBeGlobalScope,
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 arrow function expression', () => {
   it('materialize scope for arrow function expression', () => {
-    const ast = parse(`
-            var arrow = () => {
-                let i = 0;
-                var j = 20;
-                console.log(i);
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      var arrow = () => {
+        let i = 0;
+        var j = 20;
+        console.log(i);
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -35,9 +35,7 @@ describe('ES6 arrow function expression', () => {
   });
 
   it('generate bindings for parameters', () => {
-    const ast = parse('var arrow = (a, b, c, d) => {}');
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze('var arrow = (a, b, c, d) => {}');
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -61,12 +59,10 @@ describe('ES6 arrow function expression', () => {
   });
 
   it('inherits upper scope strictness', () => {
-    const ast = parse(`
-            "use strict";
-            var arrow = () => {};
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      "use strict";
+      var arrow = () => {};
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -85,13 +81,11 @@ describe('ES6 arrow function expression', () => {
   });
 
   it('is strict when a strictness directive is used', () => {
-    const ast = parse(`
-            var arrow = () => {
-                "use strict";
-            };
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      var arrow = () => {
+        "use strict";
+      };
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -110,9 +104,7 @@ describe('ES6 arrow function expression', () => {
   });
 
   it('works with no body', () => {
-    const ast = parse('var arrow = a => a;');
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze('var arrow = a => a;');
 
     expect(scopeManager.scopes).toHaveLength(2);
 

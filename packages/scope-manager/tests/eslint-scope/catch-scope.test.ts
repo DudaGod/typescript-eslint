@@ -3,21 +3,18 @@ import {
   expectToBeCatchScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('catch', () => {
   it('creates scope', () => {
-    const ast = parse(`
-            (function () {
-                try {
-                } catch (e) {
-                }
-            }());
-        `);
-
-    const scopeManager = analyze(ast);
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        try {
+        } catch (e) {
+        }
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(5);
 

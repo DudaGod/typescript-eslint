@@ -1,12 +1,8 @@
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
-import { expectToBeGlobalScope } from '../util/expect';
+import { expectToBeGlobalScope, parseAndAnalyze } from '../util';
 
 describe('global increment', () => {
   it('becomes read/write', () => {
-    const ast = parse('b++;');
-
-    const scopeManager = analyze(ast);
+    const { scopeManager } = parseAndAnalyze('b++;');
 
     expect(scopeManager.scopes).toHaveLength(1);
 

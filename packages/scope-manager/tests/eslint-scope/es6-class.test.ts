@@ -3,21 +3,18 @@ import {
   expectToBeClassScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 class', () => {
   it('declaration name creates class scope', () => {
-    const ast = parse(`
-            class Derived extends Base {
-                constructor() {
-                }
-            }
-            new Derived();
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      class Derived extends Base {
+        constructor() {
+        }
+      }
+      new Derived();
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 
@@ -49,14 +46,12 @@ describe('ES6 class', () => {
   });
 
   it('expression name creates class scope#1', () => {
-    const ast = parse(`
-            (class Derived extends Base {
-                constructor() {
-                }
-            });
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      (class Derived extends Base {
+        constructor() {
+        }
+      });
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 
@@ -82,14 +77,12 @@ describe('ES6 class', () => {
   });
 
   it('expression name creates class scope#2', () => {
-    const ast = parse(`
-            (class extends Base {
-                constructor() {
-                }
-            });
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      (class extends Base {
+        constructor() {
+        }
+      });
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 
@@ -111,20 +104,18 @@ describe('ES6 class', () => {
   });
 
   it('computed property key may refer variables', () => {
-    const ast = parse(`
-            (function () {
-                var yuyushiki = 42;
-                (class {
-                    [yuyushiki]() {
-                    }
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        var yuyushiki = 42;
+        (class {
+          [yuyushiki]() {
+          }
 
-                    [yuyushiki + 40]() {
-                    }
-                });
-            }());
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+          [yuyushiki + 40]() {
+          }
+        });
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(5);
 
@@ -154,16 +145,14 @@ describe('ES6 class', () => {
   });
 
   it('regression #49', () => {
-    const ast = parse(`
-            class Shoe {
-                constructor() {
-                    //Shoe.x = true;
-                }
-            }
-            let shoe = new Shoe();
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      class Shoe {
+        constructor() {
+          //Shoe.x = true;
+        }
+      }
+      let shoe = new Shoe();
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 

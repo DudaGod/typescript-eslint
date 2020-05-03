@@ -1,20 +1,20 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { expectToBeGlobalScope, expectToBeFunctionScope } from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+import {
+  expectToBeFunctionScope,
+  expectToBeGlobalScope,
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 template literal', () => {
   it('refer variables', () => {
-    const ast = parse(`
-            (function () {
-                let i, j, k;
-                function testing() { }
-                let template = testing\`testing \${i} and \${j}\`
-                return template;
-            }());
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        let i, j, k;
+        function testing() { }
+        let template = testing\`testing \${i} and \${j}\`
+        return template;
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 

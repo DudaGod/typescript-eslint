@@ -15,7 +15,7 @@ type PatternVisitorCallback = (
 
 type PatternVisitorOptions = VisitorOptions;
 class PatternVisitor extends Visitor {
-  static isPattern(
+  public static isPattern(
     node: TSESTree.Node,
   ): node is
     | TSESTree.Identifier
@@ -55,7 +55,41 @@ class PatternVisitor extends Visitor {
     this.callback = callback;
   }
 
-  Identifier(pattern: TSESTree.Identifier): void {
+  protected ArrayExpression(node: TSESTree.ArrayExpression): void {
+    node.elements.forEach(this.visit, this);
+  }
+
+  protected ArrayPattern(pattern: TSESTree.ArrayPattern): void {
+    for (let i = 0; i < pattern.elements.length; ++i) {
+      const element = pattern.elements[i];
+
+      this.visit(element);
+    }
+  }
+
+  protected AssignmentExpression(node: TSESTree.AssignmentExpression): void {
+    this.assignments.push(node);
+    this.visit(node.left);
+    this.rightHandNodes.push(node.right);
+    this.assignments.pop();
+  }
+
+  protected AssignmentPattern(pattern: TSESTree.AssignmentPattern): void {
+    this.assignments.push(pattern);
+    this.visit(pattern.left);
+    this.rightHandNodes.push(pattern.right);
+    this.assignments.pop();
+  }
+
+  protected CallExpression(node: TSESTree.CallExpression): void {
+    // arguments are right hand nodes.
+    node.arguments.forEach(a => {
+      this.rightHandNodes.push(a);
+    });
+    this.visit(node.callee);
+  }
+
+  protected Identifier(pattern: TSESTree.Identifier): void {
     const lastRestElement =
       this.restElements[this.restElements.length - 1] ?? null;
 
@@ -69,7 +103,17 @@ class PatternVisitor extends Visitor {
     });
   }
 
-  Property(property: TSESTree.Property): void {
+  protected MemberExpression(node: TSESTree.MemberExpression): void {
+    // Computed property's key is a right hand node.
+    if (node.computed) {
+      this.rightHandNodes.push(node.property);
+    }
+
+    // the object is only read, write to its property.
+    this.rightHandNodes.push(node.object);
+  }
+
+  protected Property(property: TSESTree.Property): void {
     // Computed property's key is a right hand node.
     if (property.computed) {
       this.rightHandNodes.push(property.key);
@@ -81,65 +125,14 @@ class PatternVisitor extends Visitor {
     this.visit(property.value);
   }
 
-  ArrayPattern(pattern: TSESTree.ArrayPattern): void {
-    for (let i = 0; i < pattern.elements.length; ++i) {
-      const element = pattern.elements[i];
-
-      this.visit(element);
-    }
-  }
-
-  AssignmentPattern(pattern: TSESTree.AssignmentPattern): void {
-    this.assignments.push(pattern);
-    this.visit(pattern.left);
-    this.rightHandNodes.push(pattern.right);
-    this.assignments.pop();
-  }
-
-  RestElement(pattern: TSESTree.RestElement): void {
+  protected RestElement(pattern: TSESTree.RestElement): void {
     this.restElements.push(pattern);
     this.visit(pattern.argument);
     this.restElements.pop();
   }
 
-  MemberExpression(node: TSESTree.MemberExpression): void {
-    // Computed property's key is a right hand node.
-    if (node.computed) {
-      this.rightHandNodes.push(node.property);
-    }
-
-    // the object is only read, write to its property.
-    this.rightHandNodes.push(node.object);
-  }
-
-  //
-  // ForInStatement.left and AssignmentExpression.left are LeftHandSideExpression.
-  // By spec, LeftHandSideExpression is Pattern or MemberExpression.
-  //   (see also: https://github.com/estree/estree/pull/20#issuecomment-74584758)
-  // But espree 2.0 parses to ArrayExpression, ObjectExpression, etc...
-  //
-
-  SpreadElement(node: TSESTree.SpreadElement): void {
+  protected SpreadElement(node: TSESTree.SpreadElement): void {
     this.visit(node.argument);
-  }
-
-  ArrayExpression(node: TSESTree.ArrayExpression): void {
-    node.elements.forEach(this.visit, this);
-  }
-
-  AssignmentExpression(node: TSESTree.AssignmentExpression): void {
-    this.assignments.push(node);
-    this.visit(node.left);
-    this.rightHandNodes.push(node.right);
-    this.assignments.pop();
-  }
-
-  CallExpression(node: TSESTree.CallExpression): void {
-    // arguments are right hand nodes.
-    node.arguments.forEach(a => {
-      this.rightHandNodes.push(a);
-    });
-    this.visit(node.callee);
   }
 }
 

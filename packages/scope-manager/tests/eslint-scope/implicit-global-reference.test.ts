@@ -1,16 +1,14 @@
-import { expectToBeGlobalScope } from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+import { expectToBeGlobalScope, parseAndAnalyze } from '../util';
 import { DefinitionType } from '../../src/definition';
 
 describe('implicit global reference', () => {
   it('assignments global scope', () => {
-    const ast = parse(`
-            var x = 20;
-            x = 300;
-        `);
+    const { scopeManager } = parseAndAnalyze(`
+      var x = 20;
+      x = 300;
+    `);
 
-    const scopes = analyze(ast).scopes;
+    const scopes = scopeManager.scopes;
 
     expect(
       scopes.map(scope =>
@@ -25,12 +23,12 @@ describe('implicit global reference', () => {
   });
 
   it('assignments global scope without definition', () => {
-    const ast = parse(`
-            x = 300;
-            x = 300;
-        `);
+    const { scopeManager } = parseAndAnalyze(`
+      x = 300;
+      x = 300;
+    `);
 
-    const scopes = analyze(ast).scopes;
+    const scopes = scopeManager.scopes;
 
     expect(
       scopes.map(scope =>
@@ -45,14 +43,14 @@ describe('implicit global reference', () => {
   });
 
   it('assignments global scope without definition eval', () => {
-    const ast = parse(`
-            function inner() {
-                eval(str);
-                x = 300;
-            }
-        `);
+    const { scopeManager } = parseAndAnalyze(`
+      function inner() {
+        eval(str);
+        x = 300;
+      }
+    `);
 
-    const scopes = analyze(ast).scopes;
+    const scopes = scopeManager.scopes;
 
     expect(
       scopes.map(scope =>
@@ -67,13 +65,13 @@ describe('implicit global reference', () => {
   });
 
   it('assignment leaks', () => {
-    const ast = parse(`
-            function outer() {
-                x = 20;
-            }
-        `);
+    const { scopeManager } = parseAndAnalyze(`
+      function outer() {
+        x = 20;
+      }
+    `);
 
-    const scopes = analyze(ast).scopes;
+    const scopes = scopeManager.scopes;
 
     expect(
       scopes.map(scope => scope.variables.map(variable => variable.name)),
@@ -86,16 +84,16 @@ describe('implicit global reference', () => {
   });
 
   it("assignment doesn't leak", () => {
-    const ast = parse(`
-            function outer() {
-                function inner() {
-                    x = 20;
-                }
-                var x;
-            }
-        `);
+    const { scopeManager } = parseAndAnalyze(`
+      function outer() {
+        function inner() {
+          x = 20;
+        }
+        var x;
+      }
+    `);
 
-    const scopes = analyze(ast).scopes;
+    const scopes = scopeManager.scopes;
 
     expect(
       scopes.map(scope => scope.variables.map(variable => variable.name)),
@@ -108,12 +106,13 @@ describe('implicit global reference', () => {
   });
 
   it('for-in-statement leaks', () => {
-    const ast = parse(`
-            function outer() {
-                for (x in y) { }
-            }`);
+    const { scopeManager } = parseAndAnalyze(`
+      function outer() {
+        for (x in y) { }
+      }
+    `);
 
-    const scopes = analyze(ast).scopes;
+    const scopes = scopeManager.scopes;
 
     expect(
       scopes.map(scope => scope.variables.map(variable => variable.name)),
@@ -126,16 +125,16 @@ describe('implicit global reference', () => {
   });
 
   it("for-in-statement doesn't leaks", () => {
-    const ast = parse(`
-            function outer() {
-                function inner() {
-                    for (x in y) { }
-                }
-                var x;
-            }
-        `);
+    const { scopeManager } = parseAndAnalyze(`
+      function outer() {
+        function inner() {
+          for (x in y) { }
+        }
+        var x;
+      }
+    `);
 
-    const scopes = analyze(ast).scopes;
+    const scopes = scopeManager.scopes;
 
     expect(
       scopes.map(scope => scope.variables.map(variable => variable.name)),

@@ -3,7 +3,7 @@ import { ImportBindingDefinition } from '../definition';
 import { Referencer } from './Referencer';
 import { Visitor } from './Visitor';
 
-class ImportReferencer extends Visitor {
+class ImportVisitor extends Visitor {
   public readonly declaration: TSESTree.ImportDeclaration;
   public readonly referencer: Referencer;
 
@@ -17,7 +17,7 @@ class ImportReferencer extends Visitor {
     referencer: Referencer,
     declaration: TSESTree.ImportDeclaration,
   ): void {
-    const importReferencer = new ImportReferencer(declaration, referencer);
+    const importReferencer = new ImportVisitor(declaration, referencer);
     importReferencer.visit(declaration);
   }
 
@@ -56,4 +56,4 @@ class ImportReferencer extends Visitor {
   }
 }
 
-export { ImportReferencer };
+export { ImportVisitor };

@@ -5,8 +5,8 @@ import { analyze } from '../../src/analyze';
 describe('fallback option', () => {
   it('should raise an error when it encountered an unknown node if no fallback.', () => {
     const ast = parse(`
-            var foo = 0;
-        `);
+      var foo = 0;
+    `);
 
     const decl = ast.body[0] as TSESTree.VariableDeclaration;
     decl.declarations[0].init!.type = 'NumericLiteral' as never;
@@ -18,8 +18,8 @@ describe('fallback option', () => {
 
   it('should not raise an error even if it encountered an unknown node when fallback is iteration.', () => {
     const ast = parse(`
-            var foo = 0;
-        `);
+      var foo = 0;
+    `);
 
     const decl = ast.body[0] as TSESTree.VariableDeclaration;
     decl.declarations[0].init!.type = 'NumericLiteral' as never;
@@ -30,8 +30,8 @@ describe('fallback option', () => {
 
   it('should not raise an error even if it encountered an unknown node when fallback is a function.', () => {
     const ast = parse(`
-            var foo = 0;
-        `);
+      var foo = 0;
+    `);
 
     const decl = ast.body[0] as TSESTree.VariableDeclaration;
     decl.declarations[0].init!.type = 'NumericLiteral' as never;

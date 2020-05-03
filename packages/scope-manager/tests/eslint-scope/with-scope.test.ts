@@ -3,24 +3,21 @@ import {
   expectToBeFunctionScope,
   expectToBeGlobalScope,
   expectToBeWithScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('with', () => {
   it('creates scope', () => {
-    const ast = parse(
+    const { scopeManager } = parseAndAnalyze(
       `
-            (function () {
-                with (obj) {
-                    testing;
-                }
-            }());
-        `,
+        (function () {
+          with (obj) {
+            testing;
+          }
+        }());
+      `,
       'script',
     );
-
-    const scopeManager = analyze(ast);
 
     expect(scopeManager.scopes).toHaveLength(4);
 

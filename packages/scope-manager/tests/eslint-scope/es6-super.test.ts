@@ -1,26 +1,23 @@
-import { parse } from '../util/parse';
 import {
   expectToBeClassScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from '../util/expect';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 super', () => {
   it('is not handled as reference', () => {
-    const ast = parse(`
-            class Foo extends Bar {
-                constructor() {
-                    super();
-                }
+    const { scopeManager } = parseAndAnalyze(`
+      class Foo extends Bar {
+        constructor() {
+          super();
+        }
 
-                method() {
-                    super.method();
-                }
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        method() {
+          super.method();
+        }
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(4);
 

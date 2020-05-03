@@ -4,7 +4,10 @@ import { DefinitionBase } from './DefinitionBase';
 
 class FunctionNameDefinition extends DefinitionBase<
   DefinitionType.FunctionName,
-  TSESTree.FunctionDeclaration | TSESTree.FunctionExpression,
+  | TSESTree.FunctionDeclaration
+  | TSESTree.FunctionExpression
+  | TSESTree.TSDeclareFunction
+  | TSESTree.TSEmptyBodyFunctionExpression,
   null
 > {
   constructor(name: TSESTree.Identifier, node: FunctionNameDefinition['node']) {

@@ -2,45 +2,26 @@ import {
   TSESTree,
   AST_NODE_TYPES,
 } from '@typescript-eslint/experimental-utils';
-import { ImportReferencer } from './ImportReferencer';
-import { TypeReferencer } from './TypeReferencer';
-import { assert } from '../assert';
-import {
-  CatchClauseDefinition,
-  ClassNameDefinition,
-  FunctionNameDefinition,
-  ParameterDefinition,
-  VariableDefinition,
-} from '../definition';
+import { ImportVisitor } from './ImportVisitor';
 import {
   PatternVisitor,
   PatternVisitorCallback,
   PatternVisitorOptions,
 } from './PatternVisitor';
 import { ReferenceFlag, ReferenceImplicitGlobal } from './Reference';
+import { TypeVisitor } from './TypeVisitor';
+import { Visitor, VisitorOptions } from './Visitor';
+import { assert } from '../assert';
+import {
+  CatchClauseDefinition,
+  ClassNameDefinition,
+  FunctionNameDefinition,
+  ImportBindingDefinition,
+  ParameterDefinition,
+  VariableDefinition,
+} from '../definition';
 import { Scope } from '../scope';
 import { ScopeManager } from '../ScopeManager';
-import { Visitor, VisitorOptions } from './Visitor';
-
-/**
- * Traverse identifier in pattern
- */
-function traverseIdentifierInPattern(
-  options: PatternVisitorOptions,
-  rootPattern: TSESTree.Node,
-  referencer: Referencer | null | undefined,
-  callback: PatternVisitorCallback,
-): void {
-  // Call the callback at left hand identifier nodes, and Collect right hand nodes.
-  const visitor = new PatternVisitor(options, rootPattern, callback);
-
-  visitor.visit(rootPattern);
-
-  // Process the right hand nodes recursively.
-  if (referencer != null) {
-    visitor.rightHandNodes.forEach(referencer.visit, referencer);
-  }
-}
 
 type ReferencerOptions = VisitorOptions;
 // Referencing variables and creating bindings.
@@ -156,7 +137,6 @@ class Referencer extends Visitor {
     } else {
       this.visitPattern(
         node.left,
-        { processRightHandNodes: true },
         (pattern, info) => {
           const maybeImplicitGlobal = !this.currentScope().isStrict
             ? {
@@ -178,6 +158,7 @@ class Referencer extends Visitor {
             false,
           );
         },
+        { processRightHandNodes: true },
       );
     }
     this.visit(node.right);
@@ -188,9 +169,11 @@ class Referencer extends Visitor {
 
   protected visitFunction(
     node:
+      | TSESTree.ArrowFunctionExpression
       | TSESTree.FunctionDeclaration
       | TSESTree.FunctionExpression
-      | TSESTree.ArrowFunctionExpression,
+      | TSESTree.TSDeclareFunction
+      | TSESTree.TSEmptyBodyFunctionExpression,
   ): void {
     // FunctionDeclaration name is defined in upper scope
     // NOTE: Not referring variableScope. It is intended.
@@ -198,7 +181,13 @@ class Referencer extends Visitor {
     //  in ES5, FunctionDeclaration should be in FunctionBody.
     //  in ES6, FunctionDeclaration should be block scoped.
 
-    if (node.type === AST_NODE_TYPES.FunctionDeclaration && node.id) {
+    if (node.type === AST_NODE_TYPES.FunctionExpression) {
+      if (node.id) {
+        // FunctionExpression with name creates its special scope;
+        // FunctionExpressionNameScope.
+        this.scopeManager.nestFunctionExpressionNameScope(node);
+      }
+    } else if (node.id) {
       // id is defined in upper scope
       this.currentScope().defineIdentifier(
         node.id,
@@ -206,30 +195,22 @@ class Referencer extends Visitor {
       );
     }
 
-    // FunctionExpression with name creates its special scope;
-    // FunctionExpressionNameScope.
-    if (node.type === AST_NODE_TYPES.FunctionExpression && node.id) {
-      this.scopeManager.nestFunctionExpressionNameScope(node);
-    }
-
     // Consider this function is in the MethodDefinition.
     this.scopeManager.nestFunctionScope(node, this.isInnerMethodDefinition);
-
-    const visitPatternCallback: PatternVisitorCallback = (pattern, info) => {
-      this.currentScope().defineIdentifier(
-        pattern,
-        new ParameterDefinition(pattern, node, info.rest),
-      );
-
-      this.referencingDefaultValue(pattern, info.assignments, null, true);
-    };
 
     // Process parameter declarations.
     for (let i = 0; i < node.params.length; ++i) {
       this.visitPattern(
         node.params[i],
+        (pattern, info) => {
+          this.currentScope().defineIdentifier(
+            pattern,
+            new ParameterDefinition(pattern, node, info.rest),
+          );
+
+          this.referencingDefaultValue(pattern, info.assignments, null, true);
+        },
         { processRightHandNodes: true },
-        visitPatternCallback,
       );
     }
 
@@ -250,42 +231,26 @@ class Referencer extends Visitor {
   protected visitPattern(
     node: TSESTree.Node,
     callback: PatternVisitorCallback,
-  ): void;
-  protected visitPattern(
-    node: TSESTree.Node,
-    options: PatternVisitorOptions,
-    callback: PatternVisitorCallback,
-  ): void;
-  protected visitPattern(
-    node: TSESTree.Node,
-    optionsOrCallback: PatternVisitorCallback | PatternVisitorOptions,
-    callback?: PatternVisitorCallback,
+    options: PatternVisitorOptions = { processRightHandNodes: false },
   ): void {
-    let visitPatternOptions: PatternVisitorOptions;
-    let visitPatternCallback: PatternVisitorCallback;
+    // Call the callback at left hand identifier nodes, and Collect right hand nodes.
+    const visitor = new PatternVisitor(this.options, node, callback);
 
-    if (typeof optionsOrCallback === 'function') {
-      visitPatternCallback = optionsOrCallback;
-      visitPatternOptions = { processRightHandNodes: false };
-    } else {
-      assert(callback);
-      visitPatternCallback = callback;
-      visitPatternOptions = optionsOrCallback;
+    visitor.visit(node);
+
+    // Process the right hand nodes recursively.
+    if (options.processRightHandNodes) {
+      visitor.rightHandNodes.forEach(this.visit, this);
     }
-
-    traverseIdentifierInPattern(
-      this.options,
-      node,
-      visitPatternOptions.processRightHandNodes ? this : null,
-      visitPatternCallback,
-    );
   }
 
   protected visitProperty(
     node:
+      | TSESTree.ClassProperty
       | TSESTree.MethodDefinition
-      | TSESTree.TSAbstractMethodDefinition
-      | TSESTree.Property,
+      | TSESTree.Property
+      | TSESTree.TSAbstractClassProperty
+      | TSESTree.TSAbstractMethodDefinition,
   ): void {
     let previous;
 
@@ -304,6 +269,13 @@ class Referencer extends Visitor {
     }
   }
 
+  protected visitType(node: TSESTree.Node | null | undefined): void {
+    if (!node) {
+      return;
+    }
+    TypeVisitor.visit(this, node);
+  }
+
   /////////////////////
   // Visit selectors //
   /////////////////////
@@ -319,7 +291,6 @@ class Referencer extends Visitor {
       if (node.operator === '=') {
         this.visitPattern(
           node.left,
-          { processRightHandNodes: true },
           (pattern, info) => {
             const maybeImplicitGlobal = !this.currentScope().isStrict
               ? {
@@ -341,6 +312,7 @@ class Referencer extends Visitor {
               false,
             );
           },
+          { processRightHandNodes: true },
         );
       } else if (
         //
@@ -372,11 +344,9 @@ class Referencer extends Visitor {
     // don't reference the break statement's label
   }
 
-  protected ContinueStatement(): void {
-    // don't reference the continue statement's label
-  }
-
-  protected CallExpression(node: TSESTree.CallExpression): void {
+  protected CallExpression(
+    node: TSESTree.CallExpression | TSESTree.OptionalCallExpression,
+  ): void {
     this.visitChildren(node);
   }
 
@@ -387,7 +357,6 @@ class Referencer extends Visitor {
       const param = node.param;
       this.visitPattern(
         param,
-        { processRightHandNodes: true },
         (pattern, info) => {
           this.currentScope().defineIdentifier(
             pattern,
@@ -395,6 +364,7 @@ class Referencer extends Visitor {
           );
           this.referencingDefaultValue(pattern, info.assignments, null, true);
         },
+        { processRightHandNodes: true },
       );
     }
     this.visit(node.body);
@@ -408,6 +378,14 @@ class Referencer extends Visitor {
 
   protected ClassDeclaration(node: TSESTree.ClassDeclaration): void {
     this.visitClass(node);
+  }
+
+  protected ClassProperty(node: TSESTree.ClassProperty): void {
+    this.visitProperty(node);
+  }
+
+  protected ContinueStatement(): void {
+    // don't reference the continue statement's label
   }
 
   protected ExportAllDeclaration(): void {
@@ -485,14 +463,16 @@ class Referencer extends Visitor {
       'ImportDeclaration should appear when the mode is ES6 and in the module context.',
     );
 
-    ImportReferencer.visit(this, node);
+    ImportVisitor.visit(this, node);
   }
 
   protected LabeledStatement(node: TSESTree.LabeledStatement): void {
     this.visit(node.body);
   }
 
-  protected MemberExpression(node: TSESTree.MemberExpression): void {
+  protected MemberExpression(
+    node: TSESTree.MemberExpression | TSESTree.OptionalMemberExpression,
+  ): void {
     this.visit(node.object);
     if (node.computed) {
       this.visit(node.property);
@@ -505,6 +485,18 @@ class Referencer extends Visitor {
 
   protected MethodDefinition(node: TSESTree.MethodDefinition): void {
     this.visitProperty(node);
+  }
+
+  protected OptionalCallExpression(
+    node: TSESTree.OptionalCallExpression,
+  ): void {
+    this.CallExpression(node);
+  }
+
+  protected OptionalMemberExpression(
+    node: TSESTree.OptionalMemberExpression,
+  ): void {
+    this.MemberExpression(node);
   }
 
   protected Program(node: TSESTree.Program): void {
@@ -546,6 +538,59 @@ class Referencer extends Visitor {
     this.close(node);
   }
 
+  protected TSAbstractClassProperty(
+    node: TSESTree.TSAbstractClassProperty,
+  ): void {
+    this.visitProperty(node);
+  }
+
+  protected TSAbstractMethodDefinition(
+    node: TSESTree.TSAbstractMethodDefinition,
+  ): void {
+    this.visitProperty(node);
+  }
+
+  protected TSAsExpression(node: TSESTree.TSAsExpression): void {
+    this.visitType(node);
+  }
+
+  protected TSDeclareFunction(node: TSESTree.TSDeclareFunction): void {
+    this.visitFunction(node);
+  }
+
+  protected TSImportEqualsDeclaration(
+    node: TSESTree.TSImportEqualsDeclaration,
+  ): void {
+    this.currentScope().defineIdentifier(
+      node.id,
+      new ImportBindingDefinition(node.id, node, node),
+    );
+
+    if (node.moduleReference.type === AST_NODE_TYPES.TSQualifiedName) {
+      this.visit(node.moduleReference.left);
+    } else {
+      this.visit(node.moduleReference);
+    }
+  }
+
+  protected TSEmptyBodyFunctionExpression(
+    node: TSESTree.TSEmptyBodyFunctionExpression,
+  ): void {
+    this.visitFunction(node);
+  }
+
+  protected TSInterfaceDeclaration(
+    node: TSESTree.TSInterfaceDeclaration,
+  ): void {
+    this.visitType(node);
+  }
+
+  protected TSTypeAliasDeclaration(
+    node: TSESTree.TSTypeAliasDeclaration,
+  ): void {
+    this.visitType(node);
+  }
+
   protected UpdateExpression(node: TSESTree.UpdateExpression): void {
     if (PatternVisitor.isPattern(node.argument)) {
       this.visitPattern(node.argument, pattern => {
@@ -568,7 +613,6 @@ class Referencer extends Visitor {
 
       this.visitPattern(
         decl.id,
-        { processRightHandNodes: true },
         (pattern, info) => {
           variableTargetScope.defineIdentifier(
             pattern,
@@ -586,6 +630,7 @@ class Referencer extends Visitor {
             );
           }
         },
+        { processRightHandNodes: true },
       );
 
       if (decl.init) {
@@ -603,28 +648,6 @@ class Referencer extends Visitor {
     this.visit(node.body);
 
     this.close(node);
-  }
-
-  ///////////////////////////
-  // TypeScript type nodes //
-  ///////////////////////////
-
-  protected visitType(node: TSESTree.Node | null | undefined): void {
-    if (!node) {
-      return;
-    }
-    TypeReferencer.visit(this, node);
-  }
-
-  protected TSTypeAliasDeclaration(
-    node: TSESTree.TSTypeAliasDeclaration,
-  ): void {
-    this.visitType(node);
-  }
-  protected TSInterfaceDeclaration(
-    node: TSESTree.TSInterfaceDeclaration,
-  ): void {
-    this.visitType(node);
   }
 }
 

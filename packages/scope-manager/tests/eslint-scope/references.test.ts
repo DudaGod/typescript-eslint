@@ -1,12 +1,10 @@
-import { parse } from '../util/parse';
+import { parseAndAnalyze } from '../util';
 import { analyze } from '../../src/analyze';
 
 describe('References:', () => {
   describe('When there is a `let` declaration on global,', () => {
     it('the reference on global should be resolved.', () => {
-      const ast = parse('let a = 0;');
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze('let a = 0;');
 
       expect(scopeManager.scopes).toHaveLength(1);
 
@@ -26,14 +24,12 @@ describe('References:', () => {
     });
 
     it('the reference in functions should be resolved.', () => {
-      const ast = parse(`
-                let a = 0;
-                function foo() {
-                    let b = a;
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        let a = 0;
+        function foo() {
+          let b = a;
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -53,13 +49,11 @@ describe('References:', () => {
     });
 
     it('the reference in default parameters should be resolved.', () => {
-      const ast = parse(`
-                let a = 0;
-                function foo(b = a) {
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        let a = 0;
+        function foo(b = a) {
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -81,9 +75,7 @@ describe('References:', () => {
 
   describe('When there is a `const` declaration on global,', () => {
     it('the reference on global should be resolved.', () => {
-      const ast = parse('const a = 0;');
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze('const a = 0;');
 
       expect(scopeManager.scopes).toHaveLength(1);
 
@@ -103,14 +95,12 @@ describe('References:', () => {
     });
 
     it('the reference in functions should be resolved.', () => {
-      const ast = parse(`
-                const a = 0;
-                function foo() {
-                    const b = a;
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        const a = 0;
+        function foo() {
+          const b = a;
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -132,9 +122,7 @@ describe('References:', () => {
 
   describe('When there is a `var` declaration on global,', () => {
     it('the reference on global should NOT be resolved.', () => {
-      const ast = parse('var a = 0;');
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze('var a = 0;');
 
       expect(scopeManager.scopes).toHaveLength(1);
 
@@ -154,14 +142,12 @@ describe('References:', () => {
     });
 
     it('the reference in functions should NOT be resolved.', () => {
-      const ast = parse(`
-                var a = 0;
-                function foo() {
-                    var b = a;
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        var a = 0;
+        function foo() {
+          var b = a;
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -183,12 +169,10 @@ describe('References:', () => {
 
   describe('When there is a `function` declaration on global,', () => {
     it('the reference on global should NOT be resolved.', () => {
-      const ast = parse(`
-                function a() {}
-                a();
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        function a() {}
+        a();
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, a]
 
@@ -208,14 +192,12 @@ describe('References:', () => {
     });
 
     it('the reference in functions should NOT be resolved.', () => {
-      const ast = parse(`
-                function a() {}
-                function foo() {
-                    let b = a();
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        function a() {}
+        function foo() {
+          let b = a();
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(3); // [global, a, foo]
 
@@ -237,12 +219,10 @@ describe('References:', () => {
 
   describe('When there is a `class` declaration on global,', () => {
     it('the reference on global should be resolved.', () => {
-      const ast = parse(`
-                class A {}
-                let b = new A();
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        class A {}
+        let b = new A();
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, A]
 
@@ -262,14 +242,12 @@ describe('References:', () => {
     });
 
     it('the reference in functions should be resolved.', () => {
-      const ast = parse(`
-                class A {}
-                function foo() {
-                    let b = new A();
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        class A {}
+        function foo() {
+          let b = new A();
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(3); // [global, A, foo]
 
@@ -291,13 +269,11 @@ describe('References:', () => {
 
   describe('When there is a `let` declaration in functions,', () => {
     it('the reference on the function should be resolved.', () => {
-      const ast = parse(`
-                function foo() {
-                    let a = 0;
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        function foo() {
+          let a = 0;
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -317,16 +293,14 @@ describe('References:', () => {
     });
 
     it('the reference in nested functions should be resolved.', () => {
-      const ast = parse(`
-                function foo() {
-                    let a = 0;
-                    function bar() {
-                        let b = a;
-                    }
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        function foo() {
+          let a = 0;
+          function bar() {
+            let b = a;
+          }
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(3); // [global, foo, bar]
 
@@ -348,13 +322,11 @@ describe('References:', () => {
 
   describe('When there is a `var` declaration in functions,', () => {
     it('the reference on the function should be resolved.', () => {
-      const ast = parse(`
-                function foo() {
-                    var a = 0;
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        function foo() {
+          var a = 0;
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -374,16 +346,14 @@ describe('References:', () => {
     });
 
     it('the reference in nested functions should be resolved.', () => {
-      const ast = parse(`
-                function foo() {
-                    var a = 0;
-                    function bar() {
-                        var b = a;
-                    }
-                }
-            `);
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze(`
+        function foo() {
+          var a = 0;
+          function bar() {
+            var b = a;
+          }
+        }
+      `);
 
       expect(scopeManager.scopes).toHaveLength(3); // [global, foo, bar]
 
@@ -405,9 +375,7 @@ describe('References:', () => {
 
   describe('When there is a `let` declaration with destructuring assignment', () => {
     it('"let [a] = [1];", the reference should be resolved.', () => {
-      const ast = parse('let [a] = [1];');
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze('let [a] = [1];');
 
       expect(scopeManager.scopes).toHaveLength(1);
 
@@ -427,9 +395,7 @@ describe('References:', () => {
     });
 
     it('"let {a} = {a: 1};", the reference should be resolved.', () => {
-      const ast = parse('let {a} = {a: 1};');
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze('let {a} = {a: 1};');
 
       expect(scopeManager.scopes).toHaveLength(1);
 
@@ -449,9 +415,7 @@ describe('References:', () => {
     });
 
     it('"let {a: {a}} = {a: {a: 1}};", the reference should be resolved.', () => {
-      const ast = parse('let {a: {a}} = {a: {a: 1}};');
-
-      const scopeManager = analyze(ast, { ecmaVersion: 6 });
+      const { scopeManager } = parseAndAnalyze('let {a: {a}} = {a: {a: 1}};');
 
       expect(scopeManager.scopes).toHaveLength(1);
 
@@ -508,9 +472,7 @@ describe('References:', () => {
 
     trueCodes.forEach(code =>
       it(`"${code}", all references should be true.`, () => {
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes.length).toBeGreaterThanOrEqual(1);
 
@@ -543,9 +505,7 @@ describe('References:', () => {
 
     falseCodes.forEach(code =>
       it(`"${code}", all references should be false.`, () => {
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes.length).toBeGreaterThanOrEqual(1);
 
@@ -580,9 +540,7 @@ describe('References:', () => {
     ];
     falseCodes.forEach(code =>
       it(`"${code}", readonly references of "a" should be undefined.`, () => {
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes.length).toBeGreaterThanOrEqual(1);
 

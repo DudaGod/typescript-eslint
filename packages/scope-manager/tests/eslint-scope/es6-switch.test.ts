@@ -1,24 +1,24 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/experimental-utils';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
-import { expectToBeGlobalScope, expectToBeSwitchScope } from '../util/expect';
+import {
+  expectToBeGlobalScope,
+  expectToBeSwitchScope,
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 switch', () => {
   it('materialize scope', () => {
-    const ast = parse(`
-            switch (ok) {
-                case hello:
-                    let i = 20;
-                    i;
-                    break;
+    const { scopeManager } = parseAndAnalyze(`
+      switch (ok) {
+        case hello:
+          let i = 20;
+          i;
+          break;
 
-                default:
-                    let test = 30;
-                    test;
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        default:
+          let test = 30;
+          test;
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 

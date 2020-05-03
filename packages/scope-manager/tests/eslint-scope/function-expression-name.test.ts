@@ -2,18 +2,15 @@ import {
   expectToBeFunctionExpressionNameScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('function name', () => {
   it('should create its special scope', () => {
-    const ast = parse(`
-            (function name() {
-            }());
-        `);
-
-    const scopeManager = analyze(ast);
+    const { scopeManager } = parseAndAnalyze(`
+      (function name() {
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 

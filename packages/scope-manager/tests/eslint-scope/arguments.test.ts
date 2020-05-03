@@ -1,16 +1,16 @@
-import { expectToBeFunctionScope, expectToBeGlobalScope } from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+import {
+  expectToBeFunctionScope,
+  expectToBeGlobalScope,
+  parseAndAnalyze,
+} from '../util';
 
 describe('arguments', () => {
   it('arguments are correctly materialized', () => {
-    const ast = parse(`
-            (function () {
-                arguments;
-            }());
-        `);
-
-    const scopeManager = analyze(ast);
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        arguments;
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 

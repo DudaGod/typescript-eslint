@@ -2,20 +2,17 @@ import {
   expectToBeBlockScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 block scope', () => {
   it('let is materialized in ES6 block scope#1', () => {
-    const ast = parse(`
-            {
-                let i = 20;
-                i;
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      {
+        let i = 20;
+        i;
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2); // Program and BlockStatement scope.
 
@@ -33,15 +30,13 @@ describe('ES6 block scope', () => {
   });
 
   it('function delaration is materialized in ES6 block scope', () => {
-    const ast = parse(`
-            {
-                function test() {
-                }
-                test();
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      {
+        function test() {
+        }
+        test();
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(3);
 
@@ -64,16 +59,14 @@ describe('ES6 block scope', () => {
   });
 
   it('let is not hoistable#1', () => {
-    const ast = parse(`
-            var i = 42; (1)
-            {
-                i;  // (2) ReferenceError at runtime.
-                let i = 20;  // (2)
-                i;  // (2)
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      var i = 42; (1)
+      {
+        i;  // (2) ReferenceError at runtime.
+        let i = 20;  // (2)
+        i;  // (2)
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -94,25 +87,23 @@ describe('ES6 block scope', () => {
   });
 
   it('let is not hoistable#2', () => {
-    const ast = parse(`
-            (function () {
-                var i = 42; // (1)
-                i;  // (1)
-                {
-                    i;  // (3)
-                    {
-                        i;  // (2)
-                        let i = 20;  // (2)
-                        i;  // (2)
-                    }
-                    let i = 30;  // (3)
-                    i;  // (3)
-                }
-                i;  // (1)
-            }());
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        var i = 42; // (1)
+        i;  // (1)
+        {
+          i;  // (3)
+          {
+            i;  // (2)
+            let i = 20;  // (2)
+            i;  // (2)
+          }
+          let i = 30;  // (3)
+          i;  // (3)
+        }
+        i;  // (1)
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(4);
 

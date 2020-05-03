@@ -3,24 +3,21 @@ import {
   expectToBeBlockScope,
   expectToBeCatchScope,
   expectToBeGlobalScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 catch', () => {
   it('takes binding pattern', () => {
-    const ast = parse(`
-            try {
-            } catch ({ a, b, c, d }) {
-                let e = 20;
-                a;
-                b;
-                c;
-                d;
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      try {
+      } catch ({ a, b, c, d }) {
+        let e = 20;
+        a;
+        b;
+        c;
+        d;
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(4);
 

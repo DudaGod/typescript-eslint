@@ -1,25 +1,22 @@
-import { parse } from '../util/parse';
 import {
   expectToBeBlockScope,
   expectToBeForScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
   expectToBeVariableDefinition,
-} from '../util/expect';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 iteration scope', () => {
   it('let materialize iteration scope for ForInStatement#1', () => {
-    const ast = parse(`
-            (function () {
-                let i = 20;
-                for (let i in i) {
-                    console.log(i);
-                }
-            }());
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        let i = 20;
+        for (let i in i) {
+          console.log(i);
+        }
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(4);
 
@@ -58,16 +55,14 @@ describe('ES6 iteration scope', () => {
   });
 
   it('let materialize iteration scope for ForInStatement#2', () => {
-    const ast = parse(`
-            (function () {
-                let i = 20;
-                for (let { i, j, k } in i) {
-                    console.log(i);
-                }
-            }());
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        let i = 20;
+        for (let { i, j, k } in i) {
+          console.log(i);
+        }
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(4);
 
@@ -113,17 +108,15 @@ describe('ES6 iteration scope', () => {
   });
 
   it('let materialize iteration scope for ForStatement#2', () => {
-    const ast = parse(`
-            (function () {
-                let i = 20;
-                let obj = {};
-                for (let { i, j, k } = obj; i < okok; ++i) {
-                    console.log(i, j, k);
-                }
-            }());
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      (function () {
+        let i = 20;
+        let obj = {};
+        for (let { i, j, k } = obj; i < okok; ++i) {
+          console.log(i, j, k);
+        }
+      }());
+    `);
 
     expect(scopeManager.scopes).toHaveLength(4);
 

@@ -2,15 +2,14 @@ import {
   expectToBeBlockScope,
   expectToBeFunctionScope,
   expectToBeGlobalScope,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('label', () => {
   it('should not create variables', () => {
-    const ast = parse('function bar() { q: for(;;) { break q; } }');
-
-    const scopeManager = analyze(ast);
+    const { scopeManager } = parseAndAnalyze(
+      'function bar() { q: for(;;) { break q; } }',
+    );
 
     expect(scopeManager.scopes).toHaveLength(3);
 
@@ -33,16 +32,14 @@ describe('label', () => {
   });
 
   it('should count child node references', () => {
-    const ast = parse(`
-            var foo = 5;
+    const { scopeManager } = parseAndAnalyze(`
+      var foo = 5;
 
-            label: while (true) {
-              console.log(foo);
-              break;
-            }
-        `);
-
-    const scopeManager = analyze(ast);
+      label: while (true) {
+        console.log(foo);
+        break;
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 

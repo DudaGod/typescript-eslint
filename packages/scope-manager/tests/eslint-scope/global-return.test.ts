@@ -4,18 +4,18 @@ import {
   expectToBeFunctionScope,
   expectToBeModuleScope,
   expectToBeImportBindingDefinition,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+} from '../util';
+import { parseAndAnalyze } from '../util/parse';
 
 describe('gloablReturn option', () => {
   it('creates a function scope following the global scope immediately', () => {
-    const ast = parse(`
-            "use strict";
-            var hello = 20;
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6, gloablReturn: true });
+    const { scopeManager } = parseAndAnalyze(
+      `
+        "use strict";
+        var hello = 20;
+      `,
+      { globalReturn: true },
+    );
 
     expect(scopeManager.scopes).toHaveLength(2);
 
@@ -36,12 +36,9 @@ describe('gloablReturn option', () => {
   });
 
   it('creates a function scope following the global scope immediately and creates module scope', () => {
-    const ast = parse("import {x as v} from 'mod';");
-
-    const scopeManager = analyze(ast, {
-      ecmaVersion: 6,
-      gloablReturn: true,
+    const { scopeManager } = parseAndAnalyze("import {x as v} from 'mod';", {
       sourceType: 'module',
+      globalReturn: true,
     });
 
     expect(scopeManager.scopes).toHaveLength(3);

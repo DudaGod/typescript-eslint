@@ -1,5 +1,4 @@
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+import { parseAndAnalyze } from '../util';
 
 function forEach<T extends string>(
   obj: Record<T, string>,
@@ -23,9 +22,7 @@ describe('ES6 default parameters:', () => {
 
       it(name, () => {
         const numVars = name === 'ArrowExpression' ? 2 : 3;
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -49,17 +46,17 @@ describe('ES6 default parameters:', () => {
   describe('a default parameter creates a readable reference for references in right:', () => {
     const patterns = {
       FunctionDeclaration: `
-                let a;
-                function foo(b = a) {}
-            `,
+        let a;
+        function foo(b = a) {}
+      `,
       FunctionExpression: `
-                let a;
-                let foo = function(b = a) {}
-            `,
+        let a;
+        let foo = function(b = a) {}
+      `,
       ArrowExpression: `
-                let a;
-                let foo = (b = a) => {};
-            `,
+        let a;
+        let foo = (b = a) => {};
+      `,
     };
 
     forEach(patterns, name => {
@@ -67,9 +64,7 @@ describe('ES6 default parameters:', () => {
 
       it(name, () => {
         const numVars = name === 'ArrowExpression' ? 1 : 2;
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -93,17 +88,17 @@ describe('ES6 default parameters:', () => {
   describe('a default parameter creates a readable reference for references in right (for const):', () => {
     const patterns = {
       FunctionDeclaration: `
-                const a = 0;
-                function foo(b = a) {}
-            `,
+        const a = 0;
+        function foo(b = a) {}
+      `,
       FunctionExpression: `
-                const a = 0;
-                let foo = function(b = a) {}
-            `,
+        const a = 0;
+        let foo = function(b = a) {}
+      `,
       ArrowExpression: `
-                const a = 0;
-                let foo = (b = a) => {};
-            `,
+        const a = 0;
+        let foo = (b = a) => {};
+      `,
     };
 
     forEach(patterns, name => {
@@ -111,9 +106,7 @@ describe('ES6 default parameters:', () => {
 
       it(name, () => {
         const numVars = name === 'ArrowExpression' ? 1 : 2;
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -137,17 +130,17 @@ describe('ES6 default parameters:', () => {
   describe('a default parameter creates a readable reference for references in right (partial):', () => {
     const patterns = {
       FunctionDeclaration: `
-                let a;
-                function foo(b = a.c) {}
-            `,
+        let a;
+        function foo(b = a.c) {}
+      `,
       FunctionExpression: `
-                let a;
-                let foo = function(b = a.c) {}
-            `,
+        let a;
+        let foo = function(b = a.c) {}
+      `,
       ArrowExpression: `
-                let a;
-                let foo = (b = a.c) => {};
-            `,
+        let a;
+        let foo = (b = a.c) => {};
+      `,
     };
 
     forEach(patterns, name => {
@@ -155,9 +148,7 @@ describe('ES6 default parameters:', () => {
 
       it(name, () => {
         const numVars = name === 'ArrowExpression' ? 1 : 2;
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -181,26 +172,24 @@ describe('ES6 default parameters:', () => {
   describe("a default parameter creates a readable reference for references in right's nested scope:", () => {
     const patterns = {
       FunctionDeclaration: `
-                let a;
-                function foo(b = function() { return a; }) {}
-            `,
+        let a;
+        function foo(b = function() { return a; }) {}
+      `,
       FunctionExpression: `
-                let a;
-                let foo = function(b = function() { return a; }) {}
-            `,
+        let a;
+        let foo = function(b = function() { return a; }) {}
+      `,
       ArrowExpression: `
-                let a;
-                let foo = (b = function() { return a; }) => {};
-            `,
+        let a;
+        let foo = (b = function() { return a; }) => {};
+      `,
     };
 
     forEach(patterns, name => {
       const code = patterns[name];
 
       it(name, () => {
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(3); // [global, foo, anonymous]
 
@@ -224,17 +213,17 @@ describe('ES6 default parameters:', () => {
   describe("a default parameter creates a readable reference for references in right. It's resolved to outer scope's even if there is the variable in the function body:", () => {
     const patterns = {
       FunctionDeclaration: `
-                let a;
-                function foo(b = a) { let a; }
-            `,
+        let a;
+        function foo(b = a) { let a; }
+      `,
       FunctionExpression: `
-                let a;
-                let foo = function(b = a) { let a; }
-            `,
+        let a;
+        let foo = function(b = a) { let a; }
+      `,
       ArrowExpression: `
-                let a;
-                let foo = (b = a) => { let a; };
-            `,
+        let a;
+        let foo = (b = a) => { let a; };
+      `,
     };
 
     forEach(patterns, name => {
@@ -242,9 +231,7 @@ describe('ES6 default parameters:', () => {
 
       it(name, () => {
         const numVars = name === 'ArrowExpression' ? 2 : 3;
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -268,17 +255,17 @@ describe('ES6 default parameters:', () => {
   describe("a default parameter creates a readable reference for references in right. It's resolved to the parameter:", () => {
     const patterns = {
       FunctionDeclaration: `
-                let a;
-                function foo(b = a, a) { }
-            `,
+        let a;
+        function foo(b = a, a) { }
+      `,
       FunctionExpression: `
-                let a;
-                let foo = function(b = a, a) { }
-            `,
+        let a;
+        let foo = function(b = a, a) { }
+      `,
       ArrowExpression: `
-                let a;
-                let foo = (b = a, a) => { };
-            `,
+        let a;
+        let foo = (b = a, a) => { };
+      `,
     };
 
     forEach(patterns, name => {
@@ -286,9 +273,7 @@ describe('ES6 default parameters:', () => {
 
       it(name, () => {
         const numVars = name === 'ArrowExpression' ? 2 : 3;
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(2); // [global, foo]
 
@@ -314,26 +299,24 @@ describe('ES6 default parameters:', () => {
   describe("a default parameter creates a readable reference for references in right (nested scope). It's resolved to outer scope's even if there is the variable in the function body:", () => {
     const patterns = {
       FunctionDeclaration: `
-                let a;
-                function foo(b = function(){ a }) { let a; }
-            `,
+        let a;
+        function foo(b = function(){ a }) { let a; }
+      `,
       FunctionExpression: `
-                let a;
-                let foo = function(b = function(){ a }) { let a; }
-            `,
+        let a;
+        let foo = function(b = function(){ a }) { let a; }
+      `,
       ArrowExpression: `
-                let a;
-                let foo = (b = function(){ a }) => { let a; };
-            `,
+        let a;
+        let foo = (b = function(){ a }) => { let a; };
+      `,
     };
 
     forEach(patterns, name => {
       const code = patterns[name];
 
       it(name, () => {
-        const ast = parse(code);
-
-        const scopeManager = analyze(ast, { ecmaVersion: 6 });
+        const { scopeManager } = parseAndAnalyze(code);
 
         expect(scopeManager.scopes).toHaveLength(3); // [global, foo, anonymous function]
 

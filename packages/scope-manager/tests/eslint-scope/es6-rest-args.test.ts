@@ -4,19 +4,16 @@ import {
   expectToBeGlobalScope,
   expectToBeIdentifier,
   expectToBeParameterDefinition,
-} from '../util/expect';
-import { parse } from '../util/parse';
-import { analyze } from '../../src/analyze';
+  parseAndAnalyze,
+} from '../util';
 
 describe('ES6 rest arguments', () => {
   it('materialize rest argument in scope', () => {
-    const ast = parse(`
-            function foo(...bar) {
-                return bar;
-            }
-        `);
-
-    const scopeManager = analyze(ast, { ecmaVersion: 6 });
+    const { scopeManager } = parseAndAnalyze(`
+      function foo(...bar) {
+        return bar;
+      }
+    `);
 
     expect(scopeManager.scopes).toHaveLength(2);
 

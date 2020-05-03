@@ -14,6 +14,8 @@ class FunctionScope extends ScopeBase<
   | TSESTree.ArrowFunctionExpression
   | TSESTree.FunctionDeclaration
   | TSESTree.FunctionExpression
+  | TSESTree.TSDeclareFunction
+  | TSESTree.TSEmptyBodyFunctionExpression
   | TSESTree.Program,
   Scope
 > {
