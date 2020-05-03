@@ -28,14 +28,20 @@ type SimpleTraverseOptions =
 class SimpleTraverser {
   private readonly allVisitorKeys = visitorKeys;
   private readonly selectors: SimpleTraverseOptions;
+  private readonly setParentPointers: boolean;
 
-  constructor(selectors: SimpleTraverseOptions) {
+  constructor(selectors: SimpleTraverseOptions, setParentPointers = false) {
     this.selectors = selectors;
+    this.setParentPointers = setParentPointers;
   }
 
   traverse(node: unknown, parent: TSESTree.Node | undefined): void {
     if (!isValidNode(node)) {
       return;
+    }
+
+    if (this.setParentPointers) {
+      node.parent = parent;
     }
 
     if ('enter' in this.selectors) {
@@ -66,6 +72,10 @@ class SimpleTraverser {
 export function simpleTraverse(
   startingNode: TSESTree.Node,
   options: SimpleTraverseOptions,
+  setParentPointers = false,
 ): void {
-  new SimpleTraverser(options).traverse(startingNode, undefined);
+  new SimpleTraverser(options, setParentPointers).traverse(
+    startingNode,
+    undefined,
+  );
 }

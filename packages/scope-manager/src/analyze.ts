@@ -1,4 +1,8 @@
-import { TSESLint, TSESTree } from '@typescript-eslint/experimental-utils';
+import {
+  TSESLint,
+  TSESTree,
+  visitorKeys,
+} from '@typescript-eslint/experimental-utils';
 import { Referencer, ReferencerOptions } from './referencer';
 import { ScopeManager } from './ScopeManager';
 
@@ -41,7 +45,7 @@ const DEFAULT_OPTIONS: Options = {
   impliedStrict: false,
   sourceType: 'script',
   ecmaVersion: 2018,
-  childVisitorKeys: null,
+  childVisitorKeys: visitorKeys,
   fallback: 'iteration',
 };
 

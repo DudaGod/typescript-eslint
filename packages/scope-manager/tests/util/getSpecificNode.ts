@@ -28,11 +28,20 @@ function getSpecificNode<
   cb?: (node: TNode) => TReturnType | null | undefined,
 ): TReturnType {
   let node: TReturnType | null | undefined = null;
-  simpleTraverse(ast, {
-    [selector](n: TNode) {
-      node = cb ? cb(n) : ((n as never) as TReturnType);
+  simpleTraverse(
+    ast,
+    {
+      [selector](n: TNode) {
+        const res = cb ? cb(n) : ((n as never) as TReturnType);
+        if (res) {
+          // the callback shouldn't match multiple nodes or else tests may behave weirdly
+          expect(node).toBeFalsy();
+          node = res;
+        }
+      },
     },
-  });
+    true,
+  );
 
   expect(node).not.toBeFalsy();
   return node!;

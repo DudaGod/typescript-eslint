@@ -26,6 +26,7 @@ describe('variable definition', () => {
           references: Array [
             Reference$1 {
               identifier: Identifier<"TypeDecl">,
+              isTypeReference: true,
               resolved: Variable$1,
             },
           ],
@@ -68,8 +69,9 @@ describe('variable definition', () => {
           ],
           name: "InterfaceDecl",
           references: Array [
-            Reference$2 {
+            Reference$1 {
               identifier: Identifier<"InterfaceDecl">,
+              isTypeReference: true,
               resolved: Variable$1,
             },
           ],
@@ -101,6 +103,7 @@ describe('variable definition', () => {
           references: Array [
             Reference$2 {
               identifier: Identifier<"TypeParam">,
+              isTypeReference: true,
               resolved: Variable$2,
             },
           ],
@@ -120,9 +123,9 @@ describe('variable definition', () => {
     );
     expect(scopeManager.getDeclaredVariables(node)).toMatchInlineSnapshot(`
       Array [
-        Variable$2 {
+        Variable$3 {
           defs: Array [
-            TypeDefinition$2 {
+            TypeDefinition$3 {
               name: Identifier<"Inferred">,
               node: TSTypeParameter$1 {
                 name: Identifier<"Inferred">,
@@ -134,13 +137,15 @@ describe('variable definition', () => {
           ],
           name: "Inferred",
           references: Array [
-            Reference$4 {
-              identifier: Identifier<"Inferred">,
-              resolved: Variable$2,
-            },
             Reference$5 {
               identifier: Identifier<"Inferred">,
-              resolved: Variable$2,
+              isTypeReference: true,
+              resolved: Variable$3,
+            },
+            Reference$6 {
+              identifier: Identifier<"Inferred">,
+              isTypeReference: true,
+              resolved: Variable$3,
             },
           ],
         },
