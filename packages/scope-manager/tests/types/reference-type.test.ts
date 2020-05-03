@@ -113,18 +113,41 @@ describe('referencing a type - positive', () => {
     const node = getSpecificNode(ast, AST_NODE_TYPES.ImportSpecifier);
     const variable = scopeManager.getDeclaredVariables(node)[0];
     expect(variable.references).toHaveLength(2);
+    // first reference is from the variable
     const variableDecl = getSpecificNode(
       ast,
       AST_NODE_TYPES.VariableDeclarator,
     );
     expect(variable.references[0].identifier.parent).toBe(variableDecl);
+    // second reference is from the type
     const typeRef = getSpecificNode(ast, AST_NODE_TYPES.TSTypeReference);
     expect(variable.references[1].identifier.parent).toBe(typeRef);
+  });
+
+  it('records a reference when a value is referenced from a typeof predicate', () => {
+    const { ast, scopeManager } = parseAndAnalyze(`
+      const value = 1;
+      type Type = typeof value;
+    `);
+    const node = getSpecificNode(ast, AST_NODE_TYPES.VariableDeclarator);
+    const variable = scopeManager.getDeclaredVariables(node)[0];
+
+    expect(variable.references).toHaveLength(2);
+    // first ref is the definition of the variable
+    expect(variable.references[0].identifier.parent).toBe(node);
+    // second ref is the predicate reference
+    const referencingNode = getSpecificNode(
+      ast,
+      AST_NODE_TYPES.TSTypeAliasDeclaration,
+    );
+    expect(variable.references[1].identifier.parent?.parent).toBe(
+      referencingNode,
+    );
   });
 });
 
 describe('referencing a type - negative', () => {
-  it('does not record a reference when a value is referenced from a type', () => {
+  it('does not record a reference when a value is referenced from a type without a typeof predicate', () => {
     const { ast, scopeManager } = parseAndAnalyze(`
       const value = 1;
       type Type = value;
