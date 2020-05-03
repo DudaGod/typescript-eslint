@@ -10,7 +10,7 @@ describe('referencing a type - positive', () => {
     const node = getSpecificNode(
       ast,
       AST_NODE_TYPES.TSTypeAliasDeclaration,
-      n => (n.id.name === 'TypeDecl' ? n : null),
+      n => n.id.name === 'TypeDecl',
     );
     const variable = scopeManager.getDeclaredVariables(node)[0];
 
@@ -18,7 +18,7 @@ describe('referencing a type - positive', () => {
     const referencingNode = getSpecificNode(
       ast,
       AST_NODE_TYPES.TSTypeAliasDeclaration,
-      n => (n.id.name === 'OtherType' ? n : null),
+      n => n.id.name === 'OtherType',
     );
     expect(variable.references[0].identifier.parent?.parent).toBe(
       referencingNode,
@@ -56,6 +56,49 @@ describe('referencing a type - positive', () => {
       AST_NODE_TYPES.TSTypeReference,
     );
     expect(variable.references[0].identifier.parent).toBe(referencingNode);
+  });
+
+  it('records references when a name has both a type and a variable definition', () => {
+    const { ast, scopeManager } = parseAndAnalyze(`
+      const dual = 1;
+      type dual = number;
+
+      type reference1 = dual;
+      const reference2 = dual;
+    `);
+    const node = getSpecificNode(
+      ast,
+      AST_NODE_TYPES.VariableDeclarator,
+      n => n.id.type === AST_NODE_TYPES.Identifier && n.id.name === 'dual',
+    );
+    const variable = scopeManager.getDeclaredVariables(node)[0];
+
+    // it should merge the defs into a single variable
+    expect(variable.defs).toHaveLength(2);
+
+    expect(variable.references).toHaveLength(3);
+
+    // first ref is the definition of the variable
+    expect(variable.references[0].identifier.parent).toBe(node);
+    // second ref is the type reference
+    const referencingTypeNode = getSpecificNode(
+      ast,
+      AST_NODE_TYPES.TSTypeAliasDeclaration,
+      n => n.id.name === 'reference1',
+    );
+    expect(variable.references[1].identifier.parent?.parent).toBe(
+      referencingTypeNode,
+    );
+    // third ref is the variable reference
+    const referencingVariableNode = getSpecificNode(
+      ast,
+      AST_NODE_TYPES.VariableDeclarator,
+      n =>
+        n.id.type === AST_NODE_TYPES.Identifier && n.id.name === 'reference2',
+    );
+    expect(variable.references[2].identifier.parent).toBe(
+      referencingVariableNode,
+    );
   });
 });
 

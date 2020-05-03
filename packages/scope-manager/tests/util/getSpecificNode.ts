@@ -10,39 +10,44 @@ function getSpecificNode<
 >(ast: TSESTree.Node, selector: TSelector): TNode;
 function getSpecificNode<
   TSelector extends AST_NODE_TYPES,
+  TNode extends Extract<TSESTree.Node, { type: TSelector }>
+>(
+  ast: TSESTree.Node,
+  selector: TSelector,
+  cb: (node: TNode) => boolean | null | undefined,
+): TNode;
+function getSpecificNode<
+  TSelector extends AST_NODE_TYPES,
   TNode extends Extract<TSESTree.Node, { type: TSelector }>,
-  TReturnType extends TSESTree.Node = TNode
+  TReturnType extends TSESTree.Node
 >(
   ast: TSESTree.Node,
   selector: TSelector,
   cb: (node: TNode) => TReturnType | null | undefined,
 ): TReturnType;
 
-function getSpecificNode<
-  TSelector extends AST_NODE_TYPES,
-  TNode extends Extract<TSESTree.Node, { type: TSelector }>,
-  TReturnType extends TSESTree.Node = TNode
->(
+function getSpecificNode(
   ast: TSESTree.Node,
-  selector: TSelector,
-  cb?: (node: TNode) => TReturnType | null | undefined,
-): TReturnType {
-  let node: TReturnType | null | undefined = null;
+  selector: AST_NODE_TYPES,
+  cb?: (node: TSESTree.Node) => TSESTree.Node | boolean | null | undefined,
+): TSESTree.Node {
+  let node: TSESTree.Node | null | undefined = null;
   simpleTraverse(
     ast,
     {
-      [selector](n: TNode) {
-        const res = cb ? cb(n) : ((n as never) as TReturnType);
+      [selector](n: TSESTree.Node) {
+        const res = cb ? cb(n) : n;
         if (res) {
           // the callback shouldn't match multiple nodes or else tests may behave weirdly
           expect(node).toBeFalsy();
-          node = res;
+          node = typeof res === 'boolean' ? n : res;
         }
       },
     },
     true,
   );
 
+  // should have found at least one node
   expect(node).not.toBeFalsy();
   return node!;
 }
