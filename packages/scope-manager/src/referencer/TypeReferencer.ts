@@ -16,27 +16,36 @@ class TypeReferencer extends Visitor {
 
   visitTypeDeclaration(
     name: TSESTree.Identifier,
-    node:
-      | TSESTree.TSTypeParameter
-      | TSESTree.TSInterfaceDeclaration
-      | TSESTree.TSTypeAliasDeclaration,
+    node: TSESTree.TSInterfaceDeclaration | TSESTree.TSTypeAliasDeclaration,
   ): void {
     this.referencer
       .currentScope()
       .defineIdentifier(name, new TypeDefinition(name, node));
 
-    this.visitChildren(node);
+    if (node.typeParameters) {
+      // type parameters cannot be referenced from outside their current scope
+      this.referencer.scopeManager.nestTypeScope(node);
+    }
+
+    this.visit(node.typeParameters);
   }
 
   TSTypeParameter(node: TSESTree.TSTypeParameter): void {
-    // generic type parameter decls, and inferred generic type parameters
-    this.visitTypeDeclaration(node.name, node);
+    this.referencer
+      .currentScope()
+      .defineIdentifier(node.name, new TypeDefinition(node.name, node));
   }
   TSTypeAliasDeclaration(node: TSESTree.TSTypeAliasDeclaration): void {
     this.visitTypeDeclaration(node.id, node);
+    this.visit(node.typeAnnotation);
+    this.referencer.close(node);
   }
   TSInterfaceDeclaration(node: TSESTree.TSInterfaceDeclaration): void {
     this.visitTypeDeclaration(node.id, node);
+    node.extends?.forEach(this.visit, this);
+    node.implements?.forEach(this.visit, this);
+    this.visit(node.body);
+    this.referencer.close(node);
   }
 
   Identifier(node: TSESTree.Identifier): void {

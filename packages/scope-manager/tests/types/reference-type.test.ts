@@ -14,18 +14,14 @@ describe('referencing a type - positive', () => {
     );
     const variable = scopeManager.getDeclaredVariables(node)[0];
 
-    // there should be one reference from the declaration itself
-    expect(variable.references).toHaveLength(2);
-    expect(variable.references[0].identifier.parent).toBe(node);
-
-    // and one reference from the usage
-    const otherTypeDecl = getSpecificNode(
+    expect(variable.references).toHaveLength(1);
+    const referencingNode = getSpecificNode(
       ast,
       AST_NODE_TYPES.TSTypeAliasDeclaration,
       n => (n.id.name === 'OtherType' ? n : null),
     );
-    expect(variable.references[1].identifier.parent?.parent).toBe(
-      otherTypeDecl,
+    expect(variable.references[0].identifier.parent?.parent).toBe(
+      referencingNode,
     );
   });
 
@@ -37,14 +33,13 @@ describe('referencing a type - positive', () => {
     const node = getSpecificNode(ast, AST_NODE_TYPES.ClassDeclaration);
     const variable = scopeManager.getDeclaredVariables(node)[0];
 
-    // there should be one reference from the type declaration
     expect(variable.references).toHaveLength(1);
-    const otherTypeDecl = getSpecificNode(
+    const referencingNode = getSpecificNode(
       ast,
       AST_NODE_TYPES.TSTypeAliasDeclaration,
     );
     expect(variable.references[0].identifier.parent?.parent).toBe(
-      otherTypeDecl,
+      referencingNode,
     );
   });
 
@@ -55,13 +50,12 @@ describe('referencing a type - positive', () => {
     const node = getSpecificNode(ast, AST_NODE_TYPES.TSTypeParameter);
     const variable = scopeManager.getDeclaredVariables(node)[0];
 
-    // there should be one reference from the declaration itself
-    expect(variable.references).toHaveLength(2);
-    expect(variable.references[0].identifier.parent).toBe(node);
-
-    // and one reference from the usage
-    const usage = getSpecificNode(ast, AST_NODE_TYPES.TSTypeReference);
-    expect(variable.references[1].identifier.parent).toBe(usage);
+    expect(variable.references).toHaveLength(1);
+    const referencingNode = getSpecificNode(
+      ast,
+      AST_NODE_TYPES.TSTypeReference,
+    );
+    expect(variable.references[0].identifier.parent).toBe(referencingNode);
   });
 });
 
@@ -74,37 +68,29 @@ describe('referencing a type - negative', () => {
     const node = getSpecificNode(ast, AST_NODE_TYPES.VariableDeclarator);
     const variable = scopeManager.getDeclaredVariables(node)[0];
 
-    // there should be one reference from the declaration itself
+    // variables declare a reference to themselves if they have an initialization
+    // so there should be one reference from the declaration itself
     expect(variable.references).toHaveLength(1);
     expect(variable.references[0].identifier.parent).toBe(node);
   });
 
   it('does not record a reference when a type is referenced from a value', () => {
     const { ast, scopeManager } = parseAndAnalyze(`
-      type Type = value;
-      const value = 1;
+      type Type = 1;
+      const value = Type;
     `);
     const node = getSpecificNode(ast, AST_NODE_TYPES.TSTypeAliasDeclaration);
     const variable = scopeManager.getDeclaredVariables(node)[0];
-
-    // there should be one reference from the declaration itself
-    expect(variable.references).toHaveLength(1);
-    expect(variable.references[0].identifier.parent).toBe(node);
+    expect(variable.references).toHaveLength(0);
   });
 
-  it.todo(
-    'does not record a reference when a type is referenced from outside its declaring type',
-    // () => {
-    //   const { ast, scopeManager } = parseAndAnalyze(`
-    //   type TypeDecl<TypeParam> = T;
-    //   type Other = TypeParam;
-    // `);
-    //   const node = getSpecificNode(ast, AST_NODE_TYPES.TSTypeParameter);
-    //   const variable = scopeManager.getDeclaredVariables(node)[0];
-
-    //   // there should be one reference from the declaration itself
-    //   expect(variable.references).toHaveLength(1);
-    //   expect(variable.references[0].identifier.parent).toBe(node);
-    // },
-  );
+  it('does not record a reference when a type is referenced from outside its declaring type', () => {
+    const { ast, scopeManager } = parseAndAnalyze(`
+      type TypeDecl<TypeParam> = T;
+      type Other = TypeParam;
+    `);
+    const node = getSpecificNode(ast, AST_NODE_TYPES.TSTypeParameter);
+    const variable = scopeManager.getDeclaredVariables(node)[0];
+    expect(variable.references).toHaveLength(0);
+  });
 });

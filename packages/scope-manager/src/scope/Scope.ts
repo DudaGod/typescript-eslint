@@ -7,6 +7,7 @@ import { FunctionScope } from './FunctionScope';
 import { GlobalScope } from './GlobalScope';
 import { ModuleScope } from './ModuleScope';
 import { SwitchScope } from './SwitchScope';
+import { TypeScope } from './TypeScope';
 import { WithScope } from './WithScope';
 
 type Scope =
@@ -19,6 +20,7 @@ type Scope =
   | GlobalScope
   | ModuleScope
   | SwitchScope
+  | TypeScope
   | WithScope;
 
 type BlockNode = Scope['block'];

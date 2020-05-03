@@ -24,7 +24,7 @@ declare class ESRecurseVisitorType {
   /**
    * Dispatching node.
    */
-  visit(node: TSESTree.Node | null): void;
+  visit(node: TSESTree.Node | null | undefined): void;
 }
 class Visitor extends (ESRecurseVisitor as typeof ESRecurseVisitorType) {}
 

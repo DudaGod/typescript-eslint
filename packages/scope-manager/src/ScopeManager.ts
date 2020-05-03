@@ -11,6 +11,7 @@ import {
   ModuleScope,
   Scope,
   SwitchScope,
+  TypeScope,
   WithScope,
 } from './scope';
 
@@ -144,13 +145,33 @@ class ScopeManager {
     return scope;
   }
 
-  public nestGlobalScope(node: GlobalScope['block']): Scope {
-    return this.nestScope(new GlobalScope(this, node));
-  }
-
   public nestBlockScope(node: BlockScope['block']): Scope {
     assert(this.currentScope);
     return this.nestScope(new BlockScope(this, this.currentScope, node));
+  }
+
+  public nestCatchScope(node: CatchScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new CatchScope(this, this.currentScope, node));
+  }
+
+  public nestClassScope(node: ClassScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new ClassScope(this, this.currentScope, node));
+  }
+
+  public nestForScope(node: ForScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new ForScope(this, this.currentScope, node));
+  }
+
+  public nestFunctionExpressionNameScope(
+    node: FunctionExpressionNameScope['block'],
+  ): Scope {
+    assert(this.currentScope);
+    return this.nestScope(
+      new FunctionExpressionNameScope(this, this.currentScope, node),
+    );
   }
 
   public nestFunctionScope(
@@ -163,29 +184,8 @@ class ScopeManager {
     );
   }
 
-  public nestForScope(node: ForScope['block']): Scope {
-    assert(this.currentScope);
-    return this.nestScope(new ForScope(this, this.currentScope, node));
-  }
-
-  public nestCatchScope(node: CatchScope['block']): Scope {
-    assert(this.currentScope);
-    return this.nestScope(new CatchScope(this, this.currentScope, node));
-  }
-
-  public nestWithScope(node: WithScope['block']): Scope {
-    assert(this.currentScope);
-    return this.nestScope(new WithScope(this, this.currentScope, node));
-  }
-
-  public nestClassScope(node: ClassScope['block']): Scope {
-    assert(this.currentScope);
-    return this.nestScope(new ClassScope(this, this.currentScope, node));
-  }
-
-  public nestSwitchScope(node: SwitchScope['block']): Scope {
-    assert(this.currentScope);
-    return this.nestScope(new SwitchScope(this, this.currentScope, node));
+  public nestGlobalScope(node: GlobalScope['block']): Scope {
+    return this.nestScope(new GlobalScope(this, node));
   }
 
   public nestModuleScope(node: ModuleScope['block']): Scope {
@@ -193,13 +193,19 @@ class ScopeManager {
     return this.nestScope(new ModuleScope(this, this.currentScope, node));
   }
 
-  public nestFunctionExpressionNameScope(
-    node: FunctionExpressionNameScope['block'],
-  ): Scope {
+  public nestSwitchScope(node: SwitchScope['block']): Scope {
     assert(this.currentScope);
-    return this.nestScope(
-      new FunctionExpressionNameScope(this, this.currentScope, node),
-    );
+    return this.nestScope(new SwitchScope(this, this.currentScope, node));
+  }
+
+  public nestTypeScope(node: TypeScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new TypeScope(this, this.currentScope, node));
+  }
+
+  public nestWithScope(node: WithScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new WithScope(this, this.currentScope, node));
   }
 }
 

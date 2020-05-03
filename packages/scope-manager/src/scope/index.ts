@@ -9,4 +9,5 @@ export * from './ModuleScope';
 export * from './Scope';
 export * from './ScopeType';
 export * from './SwitchScope';
+export * from './TypeScope';
 export * from './WithScope';

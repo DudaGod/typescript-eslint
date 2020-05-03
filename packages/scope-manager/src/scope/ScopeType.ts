@@ -8,6 +8,7 @@ enum ScopeType {
   global = 'global',
   module = 'module',
   switch = 'switch',
+  type = 'type',
   with = 'with',
 }
 

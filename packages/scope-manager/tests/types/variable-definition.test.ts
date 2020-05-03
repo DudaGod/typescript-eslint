@@ -23,13 +23,7 @@ describe('variable definition', () => {
             Identifier<"TypeDecl">,
           ],
           name: "TypeDecl",
-          references: Array [
-            Reference$1 {
-              identifier: Identifier<"TypeDecl">,
-              isTypeReference: true,
-              resolved: Variable$1,
-            },
-          ],
+          references: Array [],
         },
       ]
     `);
@@ -68,13 +62,7 @@ describe('variable definition', () => {
             Identifier<"InterfaceDecl">,
           ],
           name: "InterfaceDecl",
-          references: Array [
-            Reference$1 {
-              identifier: Identifier<"InterfaceDecl">,
-              isTypeReference: true,
-              resolved: Variable$1,
-            },
-          ],
+          references: Array [],
         },
       ]
     `);
@@ -100,13 +88,7 @@ describe('variable definition', () => {
             Identifier<"TypeParam">,
           ],
           name: "TypeParam",
-          references: Array [
-            Reference$2 {
-              identifier: Identifier<"TypeParam">,
-              isTypeReference: true,
-              resolved: Variable$2,
-            },
-          ],
+          references: Array [],
         },
       ]
     `);
@@ -137,12 +119,7 @@ describe('variable definition', () => {
           ],
           name: "Inferred",
           references: Array [
-            Reference$5 {
-              identifier: Identifier<"Inferred">,
-              isTypeReference: true,
-              resolved: Variable$3,
-            },
-            Reference$6 {
+            Reference$3 {
               identifier: Identifier<"Inferred">,
               isTypeReference: true,
               resolved: Variable$3,

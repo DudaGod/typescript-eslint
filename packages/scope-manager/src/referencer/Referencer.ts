@@ -45,29 +45,27 @@ function traverseIdentifierInPattern(
 type ReferencerOptions = VisitorOptions;
 // Referencing variables and creating bindings.
 class Referencer extends Visitor {
-  isInnerMethodDefinition: boolean;
-  options: ReferencerOptions;
-  scopeManager: ScopeManager;
-  parent: TSESTree.Node | null;
+  private isInnerMethodDefinition: boolean;
+  public readonly options: ReferencerOptions;
+  public readonly scopeManager: ScopeManager;
 
   constructor(options: ReferencerOptions, scopeManager: ScopeManager) {
     super(null, options);
     this.options = options;
     this.scopeManager = scopeManager;
-    this.parent = null;
     this.isInnerMethodDefinition = false;
   }
 
-  currentScope(): Scope;
-  currentScope(throwOnNull: true): Scope | null;
-  currentScope(dontThrowOnNull?: true): Scope | null {
+  public currentScope(): Scope;
+  public currentScope(throwOnNull: true): Scope | null;
+  public currentScope(dontThrowOnNull?: true): Scope | null {
     if (!dontThrowOnNull) {
       assert(this.scopeManager.currentScope);
     }
     return this.scopeManager.currentScope;
   }
 
-  close(node: TSESTree.Node): void {
+  public close(node: TSESTree.Node): void {
     while (this.currentScope(true) && node === this.currentScope().block) {
       this.scopeManager.currentScope = this.currentScope().close(
         this.scopeManager,
@@ -75,18 +73,20 @@ class Referencer extends Visitor {
     }
   }
 
-  pushInnerMethodDefinition(isInnerMethodDefinition: boolean): boolean {
+  private pushInnerMethodDefinition(isInnerMethodDefinition: boolean): boolean {
     const previous = this.isInnerMethodDefinition;
 
     this.isInnerMethodDefinition = isInnerMethodDefinition;
     return previous;
   }
 
-  popInnerMethodDefinition(isInnerMethodDefinition: boolean | undefined): void {
+  private popInnerMethodDefinition(
+    isInnerMethodDefinition: boolean | undefined,
+  ): void {
     this.isInnerMethodDefinition = !!isInnerMethodDefinition;
   }
 
-  referencingDefaultValue(
+  private referencingDefaultValue(
     pattern: TSESTree.Identifier,
     assignments: (TSESTree.AssignmentExpression | TSESTree.AssignmentPattern)[],
     maybeImplicitGlobal: ReferenceImplicitGlobal | null,
@@ -103,38 +103,90 @@ class Referencer extends Visitor {
     });
   }
 
-  visitPattern(node: TSESTree.Node, callback: PatternVisitorCallback): void;
-  visitPattern(
-    node: TSESTree.Node,
-    options: PatternVisitorOptions,
-    callback: PatternVisitorCallback,
-  ): void;
-  visitPattern(
-    node: TSESTree.Node,
-    optionsOrCallback: PatternVisitorCallback | PatternVisitorOptions,
-    callback?: PatternVisitorCallback,
-  ): void {
-    let visitPatternOptions: PatternVisitorOptions;
-    let visitPatternCallback: PatternVisitorCallback;
+  ///////////////////
+  // Visit helpers //
+  ///////////////////
 
-    if (typeof optionsOrCallback === 'function') {
-      visitPatternCallback = optionsOrCallback;
-      visitPatternOptions = { processRightHandNodes: false };
-    } else {
-      assert(callback);
-      visitPatternCallback = callback;
-      visitPatternOptions = optionsOrCallback;
+  protected visitClass(
+    node: TSESTree.ClassDeclaration | TSESTree.ClassExpression,
+  ): void {
+    if (node.type === AST_NODE_TYPES.ClassDeclaration && node.id) {
+      this.currentScope().defineIdentifier(
+        node.id,
+        new ClassNameDefinition(node.id, node),
+      );
     }
 
-    traverseIdentifierInPattern(
-      this.options,
-      node,
-      visitPatternOptions.processRightHandNodes ? this : null,
-      visitPatternCallback,
-    );
+    this.visit(node.superClass);
+
+    this.scopeManager.nestClassScope(node);
+
+    if (node.id) {
+      this.currentScope().defineIdentifier(
+        node.id,
+        new ClassNameDefinition(node.id, node),
+      );
+    }
+    this.visit(node.body);
+
+    this.close(node);
   }
 
-  visitFunction(
+  protected visitForIn(
+    node: TSESTree.ForInStatement | TSESTree.ForOfStatement,
+  ): void {
+    if (
+      node.left.type === AST_NODE_TYPES.VariableDeclaration &&
+      node.left.kind !== 'var'
+    ) {
+      this.scopeManager.nestForScope(node);
+    }
+
+    if (node.left.type === AST_NODE_TYPES.VariableDeclaration) {
+      this.visit(node.left);
+      this.visitPattern(node.left.declarations[0].id, pattern => {
+        this.currentScope().referenceValue(
+          pattern,
+          ReferenceFlag.WRITE,
+          node.right,
+          null,
+          true,
+        );
+      });
+    } else {
+      this.visitPattern(
+        node.left,
+        { processRightHandNodes: true },
+        (pattern, info) => {
+          const maybeImplicitGlobal = !this.currentScope().isStrict
+            ? {
+                pattern,
+                node,
+              }
+            : null;
+          this.referencingDefaultValue(
+            pattern,
+            info.assignments,
+            maybeImplicitGlobal,
+            false,
+          );
+          this.currentScope().referenceValue(
+            pattern,
+            ReferenceFlag.WRITE,
+            node.right,
+            maybeImplicitGlobal,
+            false,
+          );
+        },
+      );
+    }
+    this.visit(node.right);
+    this.visit(node.body);
+
+    this.close(node);
+  }
+
+  protected visitFunction(
     node:
       | TSESTree.FunctionDeclaration
       | TSESTree.FunctionExpression
@@ -195,30 +247,41 @@ class Referencer extends Visitor {
     this.close(node);
   }
 
-  visitClass(node: TSESTree.ClassDeclaration | TSESTree.ClassExpression): void {
-    if (node.type === AST_NODE_TYPES.ClassDeclaration && node.id) {
-      this.currentScope().defineIdentifier(
-        node.id,
-        new ClassNameDefinition(node.id, node),
-      );
+  protected visitPattern(
+    node: TSESTree.Node,
+    callback: PatternVisitorCallback,
+  ): void;
+  protected visitPattern(
+    node: TSESTree.Node,
+    options: PatternVisitorOptions,
+    callback: PatternVisitorCallback,
+  ): void;
+  protected visitPattern(
+    node: TSESTree.Node,
+    optionsOrCallback: PatternVisitorCallback | PatternVisitorOptions,
+    callback?: PatternVisitorCallback,
+  ): void {
+    let visitPatternOptions: PatternVisitorOptions;
+    let visitPatternCallback: PatternVisitorCallback;
+
+    if (typeof optionsOrCallback === 'function') {
+      visitPatternCallback = optionsOrCallback;
+      visitPatternOptions = { processRightHandNodes: false };
+    } else {
+      assert(callback);
+      visitPatternCallback = callback;
+      visitPatternOptions = optionsOrCallback;
     }
 
-    this.visit(node.superClass);
-
-    this.scopeManager.nestClassScope(node);
-
-    if (node.id) {
-      this.currentScope().defineIdentifier(
-        node.id,
-        new ClassNameDefinition(node.id, node),
-      );
-    }
-    this.visit(node.body);
-
-    this.close(node);
+    traverseIdentifierInPattern(
+      this.options,
+      node,
+      visitPatternOptions.processRightHandNodes ? this : null,
+      visitPatternCallback,
+    );
   }
 
-  visitProperty(
+  protected visitProperty(
     node:
       | TSESTree.MethodDefinition
       | TSESTree.TSAbstractMethodDefinition
@@ -241,59 +304,17 @@ class Referencer extends Visitor {
     }
   }
 
-  visitForIn(node: TSESTree.ForInStatement | TSESTree.ForOfStatement): void {
-    if (
-      node.left.type === AST_NODE_TYPES.VariableDeclaration &&
-      node.left.kind !== 'var'
-    ) {
-      this.scopeManager.nestForScope(node);
-    }
+  /////////////////////
+  // Visit selectors //
+  /////////////////////
 
-    if (node.left.type === AST_NODE_TYPES.VariableDeclaration) {
-      this.visit(node.left);
-      this.visitPattern(node.left.declarations[0].id, pattern => {
-        this.currentScope().referenceValue(
-          pattern,
-          ReferenceFlag.WRITE,
-          node.right,
-          null,
-          true,
-        );
-      });
-    } else {
-      this.visitPattern(
-        node.left,
-        { processRightHandNodes: true },
-        (pattern, info) => {
-          const maybeImplicitGlobal = !this.currentScope().isStrict
-            ? {
-                pattern,
-                node,
-              }
-            : null;
-          this.referencingDefaultValue(
-            pattern,
-            info.assignments,
-            maybeImplicitGlobal,
-            false,
-          );
-          this.currentScope().referenceValue(
-            pattern,
-            ReferenceFlag.WRITE,
-            node.right,
-            maybeImplicitGlobal,
-            false,
-          );
-        },
-      );
-    }
-    this.visit(node.right);
-    this.visit(node.body);
-
-    this.close(node);
+  protected ArrowFunctionExpression(
+    node: TSESTree.ArrowFunctionExpression,
+  ): void {
+    this.visitFunction(node);
   }
 
-  AssignmentExpression(node: TSESTree.AssignmentExpression): void {
+  protected AssignmentExpression(node: TSESTree.AssignmentExpression): void {
     if (PatternVisitor.isPattern(node.left)) {
       if (node.operator === '=') {
         this.visitPattern(
@@ -337,7 +358,21 @@ class Referencer extends Visitor {
     this.visit(node.right);
   }
 
-  CatchClause(node: TSESTree.CatchClause): void {
+  protected BlockStatement(node: TSESTree.BlockStatement): void {
+    if (this.scopeManager.isES6()) {
+      this.scopeManager.nestBlockScope(node);
+    }
+
+    this.visitChildren(node);
+
+    this.close(node);
+  }
+
+  protected CallExpression(node: TSESTree.CallExpression): void {
+    this.visitChildren(node);
+  }
+
+  protected CatchClause(node: TSESTree.CatchClause): void {
     this.scopeManager.nestCatchScope(node);
 
     if (node.param) {
@@ -359,7 +394,99 @@ class Referencer extends Visitor {
     this.close(node);
   }
 
-  Program(node: TSESTree.Program): void {
+  protected ClassExpression(node: TSESTree.ClassExpression): void {
+    this.visitClass(node);
+  }
+
+  protected ClassDeclaration(node: TSESTree.ClassDeclaration): void {
+    this.visitClass(node);
+  }
+
+  protected ExportDefaultDeclaration(
+    node: TSESTree.ExportDefaultDeclaration,
+  ): void {
+    this.visit(node.declaration);
+  }
+
+  protected ExportNamedDeclaration(
+    node: TSESTree.ExportNamedDeclaration,
+  ): void {
+    if (node.declaration) {
+      // export const x = 1;
+      this.visit(node.declaration);
+    } else {
+      // export { x };
+      this.visitChildren(node);
+    }
+  }
+
+  protected ExportSpecifier(node: TSESTree.ExportSpecifier): void {
+    this.visit(node.local);
+  }
+
+  protected ForInStatement(node: TSESTree.ForInStatement): void {
+    this.visitForIn(node);
+  }
+
+  protected ForOfStatement(node: TSESTree.ForOfStatement): void {
+    this.visitForIn(node);
+  }
+
+  protected ForStatement(node: TSESTree.ForStatement): void {
+    // Create ForStatement declaration.
+    // NOTE: In ES6, ForStatement dynamically generates per iteration environment. However, this is
+    // a static analyzer, we only generate one scope for ForStatement.
+    if (
+      node.init &&
+      node.init.type === AST_NODE_TYPES.VariableDeclaration &&
+      node.init.kind !== 'var'
+    ) {
+      this.scopeManager.nestForScope(node);
+    }
+
+    this.visitChildren(node);
+
+    this.close(node);
+  }
+
+  protected FunctionDeclaration(node: TSESTree.FunctionDeclaration): void {
+    this.visitFunction(node);
+  }
+
+  protected FunctionExpression(node: TSESTree.FunctionExpression): void {
+    this.visitFunction(node);
+  }
+
+  protected Identifier(node: TSESTree.Identifier): void {
+    this.currentScope().referenceValue(node);
+  }
+
+  protected ImportDeclaration(node: TSESTree.ImportDeclaration): void {
+    assert(
+      this.scopeManager.isES6() && this.scopeManager.isModule(),
+      'ImportDeclaration should appear when the mode is ES6 and in the module context.',
+    );
+
+    const importer = new ImportReferencer(node, this);
+    importer.visit(node);
+  }
+
+  protected LabeledStatement(node: TSESTree.LabeledStatement): void {
+    this.visit(node.body);
+  }
+
+  protected MemberExpression(node: TSESTree.MemberExpression): void {
+    this.visit(node.object);
+    if (node.computed) {
+      this.visit(node.property);
+    }
+  }
+
+  protected MethodDefinition(node: TSESTree.MethodDefinition): void {
+    this.visitProperty(node);
+  }
+
+  protected Program(node: TSESTree.Program): void {
     this.scopeManager.nestGlobalScope(node);
 
     if (this.scopeManager.isGlobalReturn()) {
@@ -380,11 +507,25 @@ class Referencer extends Visitor {
     this.close(node);
   }
 
-  Identifier(node: TSESTree.Identifier): void {
-    this.currentScope().referenceValue(node);
+  protected Property(node: TSESTree.Property): void {
+    this.visitProperty(node);
   }
 
-  UpdateExpression(node: TSESTree.UpdateExpression): void {
+  protected SwitchStatement(node: TSESTree.SwitchStatement): void {
+    this.visit(node.discriminant);
+
+    if (this.scopeManager.isES6()) {
+      this.scopeManager.nestSwitchScope(node);
+    }
+
+    for (let i = 0, iz = node.cases.length; i < iz; ++i) {
+      this.visit(node.cases[i]);
+    }
+
+    this.close(node);
+  }
+
+  protected UpdateExpression(node: TSESTree.UpdateExpression): void {
     if (PatternVisitor.isPattern(node.argument)) {
       this.visitPattern(node.argument, pattern => {
         this.currentScope().referenceValue(pattern, ReferenceFlag.RW, null);
@@ -394,76 +535,7 @@ class Referencer extends Visitor {
     }
   }
 
-  MemberExpression(node: TSESTree.MemberExpression): void {
-    this.visit(node.object);
-    if (node.computed) {
-      this.visit(node.property);
-    }
-  }
-
-  Property(node: TSESTree.Property): void {
-    this.visitProperty(node);
-  }
-
-  MethodDefinition(node: TSESTree.MethodDefinition): void {
-    this.visitProperty(node);
-  }
-
-  LabeledStatement(node: TSESTree.LabeledStatement): void {
-    this.visit(node.body);
-  }
-
-  ForStatement(node: TSESTree.ForStatement): void {
-    // Create ForStatement declaration.
-    // NOTE: In ES6, ForStatement dynamically generates per iteration environment. However, this is
-    // a static analyzer, we only generate one scope for ForStatement.
-    if (
-      node.init &&
-      node.init.type === AST_NODE_TYPES.VariableDeclaration &&
-      node.init.kind !== 'var'
-    ) {
-      this.scopeManager.nestForScope(node);
-    }
-
-    this.visitChildren(node);
-
-    this.close(node);
-  }
-
-  ClassExpression(node: TSESTree.ClassExpression): void {
-    this.visitClass(node);
-  }
-
-  ClassDeclaration(node: TSESTree.ClassDeclaration): void {
-    this.visitClass(node);
-  }
-
-  CallExpression(node: TSESTree.CallExpression): void {
-    this.visitChildren(node);
-  }
-
-  BlockStatement(node: TSESTree.BlockStatement): void {
-    if (this.scopeManager.isES6()) {
-      this.scopeManager.nestBlockScope(node);
-    }
-
-    this.visitChildren(node);
-
-    this.close(node);
-  }
-
-  WithStatement(node: TSESTree.WithStatement): void {
-    this.visit(node.object);
-
-    // Then nest scope for WithStatement.
-    this.scopeManager.nestWithScope(node);
-
-    this.visit(node.body);
-
-    this.close(node);
-  }
-
-  VariableDeclaration(node: TSESTree.VariableDeclaration): void {
+  protected VariableDeclaration(node: TSESTree.VariableDeclaration): void {
     const variableTargetScope =
       node.kind === 'var'
         ? this.currentScope().variableScope
@@ -501,73 +573,22 @@ class Referencer extends Visitor {
     }
   }
 
-  SwitchStatement(node: TSESTree.SwitchStatement): void {
-    this.visit(node.discriminant);
+  protected WithStatement(node: TSESTree.WithStatement): void {
+    this.visit(node.object);
 
-    if (this.scopeManager.isES6()) {
-      this.scopeManager.nestSwitchScope(node);
-    }
+    // Then nest scope for WithStatement.
+    this.scopeManager.nestWithScope(node);
 
-    for (let i = 0, iz = node.cases.length; i < iz; ++i) {
-      this.visit(node.cases[i]);
-    }
+    this.visit(node.body);
 
     this.close(node);
-  }
-
-  FunctionDeclaration(node: TSESTree.FunctionDeclaration): void {
-    this.visitFunction(node);
-  }
-
-  FunctionExpression(node: TSESTree.FunctionExpression): void {
-    this.visitFunction(node);
-  }
-
-  ForOfStatement(node: TSESTree.ForOfStatement): void {
-    this.visitForIn(node);
-  }
-
-  ForInStatement(node: TSESTree.ForInStatement): void {
-    this.visitForIn(node);
-  }
-
-  ArrowFunctionExpression(node: TSESTree.ArrowFunctionExpression): void {
-    this.visitFunction(node);
-  }
-
-  ImportDeclaration(node: TSESTree.ImportDeclaration): void {
-    assert(
-      this.scopeManager.isES6() && this.scopeManager.isModule(),
-      'ImportDeclaration should appear when the mode is ES6 and in the module context.',
-    );
-
-    const importer = new ImportReferencer(node, this);
-    importer.visit(node);
-  }
-
-  ExportDefaultDeclaration(node: TSESTree.ExportDefaultDeclaration): void {
-    this.visit(node.declaration);
-  }
-
-  ExportNamedDeclaration(node: TSESTree.ExportNamedDeclaration): void {
-    if (node.declaration) {
-      // export const x = 1;
-      this.visit(node.declaration);
-    } else {
-      // export { x };
-      this.visitChildren(node);
-    }
-  }
-
-  ExportSpecifier(node: TSESTree.ExportSpecifier): void {
-    this.visit(node.local);
   }
 
   ///////////////////////////
   // TypeScript type nodes //
   ///////////////////////////
 
-  visitTypeDeclaration(
+  protected visitTypeDeclaration(
     node:
       | TSESTree.TSTypeParameter
       | TSESTree.TSInterfaceDeclaration
@@ -577,10 +598,14 @@ class Referencer extends Visitor {
     typeReferencer.visit(node);
   }
 
-  TSTypeAliasDeclaration(node: TSESTree.TSTypeAliasDeclaration): void {
+  protected TSTypeAliasDeclaration(
+    node: TSESTree.TSTypeAliasDeclaration,
+  ): void {
     this.visitTypeDeclaration(node);
   }
-  TSInterfaceDeclaration(node: TSESTree.TSInterfaceDeclaration): void {
+  protected TSInterfaceDeclaration(
+    node: TSESTree.TSInterfaceDeclaration,
+  ): void {
     this.visitTypeDeclaration(node);
   }
 }

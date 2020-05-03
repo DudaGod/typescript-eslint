@@ -283,7 +283,10 @@ class ScopeBase<
       }
 
       // make sure we don't match a type reference to a value variable
-      if (ref.isTypeReference && !variable.isTypeVariable()) {
+      if (
+        (ref.isTypeReference && !variable.isTypeVariable()) ||
+        (!ref.isTypeReference && !variable.isValueVariable())
+      ) {
         return false;
       }
 
