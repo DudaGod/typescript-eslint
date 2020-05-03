@@ -368,6 +368,14 @@ class Referencer extends Visitor {
     this.close(node);
   }
 
+  protected BreakStatement(): void {
+    // don't reference the break statement's label
+  }
+
+  protected ContinueStatement(): void {
+    // don't reference the continue statement's label
+  }
+
   protected CallExpression(node: TSESTree.CallExpression): void {
     this.visitChildren(node);
   }
@@ -402,6 +410,10 @@ class Referencer extends Visitor {
     this.visitClass(node);
   }
 
+  protected ExportAllDeclaration(): void {
+    // this defines no local variables
+  }
+
   protected ExportDefaultDeclaration(
     node: TSESTree.ExportDefaultDeclaration,
   ): void {
@@ -411,6 +423,12 @@ class Referencer extends Visitor {
   protected ExportNamedDeclaration(
     node: TSESTree.ExportNamedDeclaration,
   ): void {
+    if (node.source) {
+      // export ... from 'foo';
+      // these are external identifiers so there shouldn't be references or defs
+      return;
+    }
+
     if (node.declaration) {
       // export const x = 1;
       this.visit(node.declaration);
@@ -480,6 +498,10 @@ class Referencer extends Visitor {
     if (node.computed) {
       this.visit(node.property);
     }
+  }
+
+  protected MetaProperty(): void {
+    // meta properties all builtin globals
   }
 
   protected MethodDefinition(node: TSESTree.MethodDefinition): void {

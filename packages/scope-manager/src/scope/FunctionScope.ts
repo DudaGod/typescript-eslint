@@ -34,12 +34,8 @@ class FunctionScope extends ScopeBase<
     // section 9.2.13, FunctionDeclarationInstantiation.
     // NOTE Arrow functions never have an arguments objects.
     if (this.block.type !== AST_NODE_TYPES.ArrowFunctionExpression) {
-      this.defineArguments();
+      this.defineVariable('arguments', this.set, this.variables, null, null);
     }
-  }
-
-  private defineArguments(): void {
-    this.defineVariable('arguments', this.set, this.variables, null, null);
   }
 
   // References in default parameters isn't resolved to variables which are in their function body.
