@@ -485,8 +485,7 @@ class Referencer extends Visitor {
       'ImportDeclaration should appear when the mode is ES6 and in the module context.',
     );
 
-    const importer = new ImportReferencer(node, this);
-    importer.visit(node);
+    ImportReferencer.visit(this, node);
   }
 
   protected LabeledStatement(node: TSESTree.LabeledStatement): void {
@@ -540,7 +539,7 @@ class Referencer extends Visitor {
       this.scopeManager.nestSwitchScope(node);
     }
 
-    for (let i = 0, iz = node.cases.length; i < iz; ++i) {
+    for (let i = 0; i < node.cases.length; ++i) {
       this.visit(node.cases[i]);
     }
 
@@ -563,7 +562,7 @@ class Referencer extends Visitor {
         ? this.currentScope().variableScope
         : this.currentScope();
 
-    for (let i = 0, iz = node.declarations.length; i < iz; ++i) {
+    for (let i = 0; i < node.declarations.length; ++i) {
       const decl = node.declarations[i];
       const init = decl.init;
 
@@ -610,25 +609,22 @@ class Referencer extends Visitor {
   // TypeScript type nodes //
   ///////////////////////////
 
-  protected visitTypeDeclaration(
-    node:
-      | TSESTree.TSTypeParameter
-      | TSESTree.TSInterfaceDeclaration
-      | TSESTree.TSTypeAliasDeclaration,
-  ): void {
-    const typeReferencer = new TypeReferencer(this);
-    typeReferencer.visit(node);
+  protected visitType(node: TSESTree.Node | null | undefined): void {
+    if (!node) {
+      return;
+    }
+    TypeReferencer.visit(this, node);
   }
 
   protected TSTypeAliasDeclaration(
     node: TSESTree.TSTypeAliasDeclaration,
   ): void {
-    this.visitTypeDeclaration(node);
+    this.visitType(node);
   }
   protected TSInterfaceDeclaration(
     node: TSESTree.TSInterfaceDeclaration,
   ): void {
-    this.visitTypeDeclaration(node);
+    this.visitType(node);
   }
 }
 

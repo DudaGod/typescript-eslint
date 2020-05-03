@@ -82,7 +82,7 @@ class PatternVisitor extends Visitor {
   }
 
   ArrayPattern(pattern: TSESTree.ArrayPattern): void {
-    for (let i = 0, iz = pattern.elements.length; i < iz; ++i) {
+    for (let i = 0; i < pattern.elements.length; ++i) {
       const element = pattern.elements[i];
 
       this.visit(element);

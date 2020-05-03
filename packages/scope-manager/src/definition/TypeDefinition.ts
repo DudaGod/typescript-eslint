@@ -10,6 +10,9 @@ class TypeDefinition extends DefinitionBase<
   constructor(name: TSESTree.Identifier, node: TSESTree.Node) {
     super(DefinitionType.Type, name, node, null);
   }
+
+  public readonly isTypeDefinition = true;
+  public readonly isVariableDefinition = false;
 }
 
 export { TypeDefinition };

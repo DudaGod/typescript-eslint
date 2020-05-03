@@ -21,6 +21,9 @@ class ParameterDefinition extends DefinitionBase<
     super(DefinitionType.Parameter, name, node, null);
     this.rest = rest;
   }
+
+  public readonly isTypeDefinition = false;
+  public readonly isVariableDefinition = true;
 }
 
 export { ParameterDefinition };

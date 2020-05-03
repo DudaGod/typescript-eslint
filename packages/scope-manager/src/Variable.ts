@@ -1,9 +1,5 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
-import {
-  Definition,
-  TypeDefinitionTypes,
-  ValueDefinitionTypes,
-} from './definition';
+import { Definition } from './definition';
 import { createIdGenerator } from './ID';
 import { Reference } from './referencer/Reference';
 import { Scope } from './scope';
@@ -65,7 +61,7 @@ class Variable {
       return true;
     }
 
-    return this.defs.some(def => TypeDefinitionTypes.has(def.type));
+    return this.defs.some(def => def.isTypeDefinition);
   }
 
   /**
@@ -77,7 +73,7 @@ class Variable {
       return true;
     }
 
-    return this.defs.some(def => ValueDefinitionTypes.has(def.type));
+    return this.defs.some(def => def.isVariableDefinition);
   }
 }
 

@@ -13,6 +13,9 @@ class ImplicitGlobalVariableDefinition extends DefinitionBase<
   ) {
     super(DefinitionType.ImplicitGlobalVariable, name, node, null);
   }
+
+  public readonly isTypeDefinition = false;
+  public readonly isVariableDefinition = true;
 }
 
 export { ImplicitGlobalVariableDefinition };

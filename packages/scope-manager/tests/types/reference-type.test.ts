@@ -100,6 +100,27 @@ describe('referencing a type - positive', () => {
       referencingVariableNode,
     );
   });
+
+  it('records value and type references to imported variables', () => {
+    const { ast, scopeManager } = parseAndAnalyze(
+      `
+        import { foo } from 'module';
+        const test = foo;
+        type Test = foo;
+      `,
+      'module',
+    );
+    const node = getSpecificNode(ast, AST_NODE_TYPES.ImportSpecifier);
+    const variable = scopeManager.getDeclaredVariables(node)[0];
+    expect(variable.references).toHaveLength(2);
+    const variableDecl = getSpecificNode(
+      ast,
+      AST_NODE_TYPES.VariableDeclarator,
+    );
+    expect(variable.references[0].identifier.parent).toBe(variableDecl);
+    const typeRef = getSpecificNode(ast, AST_NODE_TYPES.TSTypeReference);
+    expect(variable.references[1].identifier.parent).toBe(typeRef);
+  });
 });
 
 describe('referencing a type - negative', () => {
@@ -133,6 +154,19 @@ describe('referencing a type - negative', () => {
       type Other = TypeParam;
     `);
     const node = getSpecificNode(ast, AST_NODE_TYPES.TSTypeParameter);
+    const variable = scopeManager.getDeclaredVariables(node)[0];
+    expect(variable.references).toHaveLength(0);
+  });
+
+  it('does not record a reference when a type import is referenced from a value', () => {
+    const { ast, scopeManager } = parseAndAnalyze(
+      `
+        import type { foo } from 'module';
+        const test = foo;
+      `,
+      'module',
+    );
+    const node = getSpecificNode(ast, AST_NODE_TYPES.ImportSpecifier);
     const variable = scopeManager.getDeclaredVariables(node)[0];
     expect(variable.references).toHaveLength(0);
   });

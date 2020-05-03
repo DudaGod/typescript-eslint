@@ -43,7 +43,7 @@ interface Options {
 const DEFAULT_OPTIONS: Options = {
   gloablReturn: false,
   impliedStrict: false,
-  sourceType: 'script',
+  sourceType: 'module',
   ecmaVersion: 2018,
   childVisitorKeys: visitorKeys,
   fallback: 'iteration',

@@ -124,7 +124,7 @@ class ScopeManager {
         }
       }
     } else {
-      for (let i = 0, iz = scopes.length; i < iz; ++i) {
+      for (let i = 0; i < scopes.length; ++i) {
         const scope = scopes[i];
 
         if (predicate(scope)) {

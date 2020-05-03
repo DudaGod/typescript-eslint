@@ -5,6 +5,7 @@ import {
 import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
+import { assert } from '../assert';
 import { ImplicitGlobalVariableDefinition } from '../definition/ImplicitGlobalVariableDefinition';
 import { Reference } from '../referencer/Reference';
 import { ScopeManager } from '../ScopeManager';
@@ -19,39 +20,42 @@ class GlobalScope extends ScopeBase<
   null
 > {
   private implicit: {
-    set: Map<string, Variable>;
-    variables: Variable[];
-    left: Reference[];
+    readonly set: Map<string, Variable>;
+    readonly variables: Variable[];
+    /**
+     * List of {@link Reference}s that are left to be resolved (i.e. which
+     * need to be linked to the variable they refer to).
+     */
+    leftToBeResolved: Reference[];
   };
   constructor(scopeManager: ScopeManager, block: GlobalScope['block']) {
     super(scopeManager, ScopeType.global, null, block, false);
     this.implicit = {
       set: new Map(),
       variables: [],
-      /**
-       * List of {@link Reference}s that are left to be resolved (i.e. which
-       * need to be linked to the variable they refer to).
-       */
-      left: [],
+      leftToBeResolved: [],
     };
   }
   public close(scopeManager: ScopeManager): Scope | null {
+    assert(this.leftToResolve);
+
     const implicit = [];
-    for (let i = 0, iz = this.left!.length; i < iz; ++i) {
-      const ref = this.left![i];
+    for (let i = 0; i < this.leftToResolve.length; ++i) {
+      const ref = this.leftToResolve[i];
       if (ref.maybeImplicitGlobal && !this.set.has(ref.identifier.name)) {
         implicit.push(ref.maybeImplicitGlobal);
       }
     }
+
     // create an implicit global variable from assignment expression
-    for (let i = 0, iz = implicit.length; i < iz; ++i) {
+    for (let i = 0; i < implicit.length; ++i) {
       const info = implicit[i];
       this.defineImplicit(
         info.pattern,
         new ImplicitGlobalVariableDefinition(info.pattern, info.node),
       );
     }
-    this.implicit.left = this.left!;
+    this.implicit.leftToBeResolved = this.leftToResolve;
     return super.close(scopeManager);
   }
   private defineImplicit(

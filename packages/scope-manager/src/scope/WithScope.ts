@@ -2,6 +2,7 @@ import { TSESTree } from '@typescript-eslint/experimental-utils';
 import { Scope } from './Scope';
 import { ScopeBase } from './ScopeBase';
 import { ScopeType } from './ScopeType';
+import { assert } from '../assert';
 import { ScopeManager } from '../ScopeManager';
 
 class WithScope extends ScopeBase<
@@ -20,11 +21,12 @@ class WithScope extends ScopeBase<
     if (this.shouldStaticallyClose()) {
       return super.close(scopeManager);
     }
-    for (let i = 0, iz = this.left!.length; i < iz; ++i) {
-      const ref = this.left![i];
+    assert(this.leftToResolve);
+    for (let i = 0; i < this.leftToResolve.length; ++i) {
+      const ref = this.leftToResolve[i];
       this.delegateToUpperScope(ref);
     }
-    this.left = null;
+    this.leftToResolve = null;
     return this.upper;
   }
 }

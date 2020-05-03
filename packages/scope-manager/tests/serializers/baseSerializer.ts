@@ -1,6 +1,18 @@
 import { NewPlugin } from 'pretty-format';
 
 type ConstructorSignature = new (...args: never) => unknown;
+
+function createSerializer<TConstructor extends ConstructorSignature>(
+  type: TConstructor,
+  keys: (keyof InstanceType<TConstructor>)[],
+): NewPlugin;
+// A hack of signature to enable this to work with abstract classes
+function createSerializer<TConstructor extends ConstructorSignature>(
+  abstractConstructor: unknown,
+  keys: (keyof InstanceType<TConstructor>)[],
+  instanceConstructorThatsNeverUsed: TConstructor,
+): NewPlugin;
+
 function createSerializer<TConstructor extends ConstructorSignature>(
   type: TConstructor,
   keys: (keyof InstanceType<TConstructor>)[],

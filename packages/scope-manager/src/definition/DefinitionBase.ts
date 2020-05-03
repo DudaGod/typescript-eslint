@@ -4,7 +4,7 @@ import { createIdGenerator } from '../ID';
 
 const generator = createIdGenerator();
 
-class DefinitionBase<
+abstract class DefinitionBase<
   TType extends DefinitionType,
   TNode extends TSESTree.Node,
   TParent extends TSESTree.Node | null
@@ -49,6 +49,16 @@ class DefinitionBase<
     this.node = node;
     this.parent = parent;
   }
+
+  /**
+   * `true` if the variable is valid in a type context, false otherwise
+   */
+  public abstract readonly isTypeDefinition: boolean;
+
+  /**
+   * `true` if the variable is valid in a value context, false otherwise
+   */
+  public abstract readonly isVariableDefinition: boolean;
 }
 
 export { DefinitionBase };

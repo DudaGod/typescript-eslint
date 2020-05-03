@@ -239,7 +239,7 @@ export class Converter {
   ): T {
     const result = data;
     if (!result.range) {
-      result.range = getRange(node, this.ast);
+      result.range = getRange(node as never, this.ast);
     }
     if (!result.loc) {
       result.loc = getLocFor(result.range[0], result.range[1], this.ast);

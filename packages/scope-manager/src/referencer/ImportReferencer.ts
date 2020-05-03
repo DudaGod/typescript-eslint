@@ -13,7 +13,15 @@ class ImportReferencer extends Visitor {
     this.referencer = referencer;
   }
 
-  visitImport(
+  static visit(
+    referencer: Referencer,
+    declaration: TSESTree.ImportDeclaration,
+  ): void {
+    const importReferencer = new ImportReferencer(declaration, referencer);
+    importReferencer.visit(declaration);
+  }
+
+  protected visitImport(
     id: TSESTree.Identifier,
     specifier:
       | TSESTree.ImportDefaultSpecifier
@@ -28,17 +36,21 @@ class ImportReferencer extends Visitor {
       );
   }
 
-  ImportNamespaceSpecifier(node: TSESTree.ImportNamespaceSpecifier): void {
+  protected ImportNamespaceSpecifier(
+    node: TSESTree.ImportNamespaceSpecifier,
+  ): void {
     const local = node.local;
     this.visitImport(local, node);
   }
 
-  ImportDefaultSpecifier(node: TSESTree.ImportDefaultSpecifier): void {
+  protected ImportDefaultSpecifier(
+    node: TSESTree.ImportDefaultSpecifier,
+  ): void {
     const local = node.local;
     this.visitImport(local, node);
   }
 
-  ImportSpecifier(node: TSESTree.ImportSpecifier): void {
+  protected ImportSpecifier(node: TSESTree.ImportSpecifier): void {
     const local = node.local;
     this.visitImport(local, node);
   }

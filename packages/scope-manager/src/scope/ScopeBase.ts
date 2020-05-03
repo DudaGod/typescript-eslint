@@ -8,6 +8,7 @@ import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
 import { BlockNode, Scope } from './Scope';
 import { ModuleScope } from './ModuleScope';
+import { assert } from '../assert';
 import { Definition, DefinitionType } from '../definition';
 import { createIdGenerator } from '../ID';
 import {
@@ -72,7 +73,7 @@ function isStrictScope(
   }
 
   // Search 'use strict' directive.
-  for (let i = 0, iz = body.body.length; i < iz; ++i) {
+  for (let i = 0; i < body.body.length; ++i) {
     const stmt = body.body[i];
 
     if (stmt.type !== AST_NODE_TYPES.ExpressionStatement) {
@@ -130,7 +131,7 @@ function shouldBeStaticallyClosed(def: Definition): boolean {
 const generator = createIdGenerator();
 
 type AnyScope = ScopeBase<ScopeType, BlockNode, Scope | null>;
-class ScopeBase<
+abstract class ScopeBase<
   TType extends ScopeType,
   TBlock extends BlockNode,
   TUpper extends Scope | null
@@ -168,7 +169,11 @@ class ScopeBase<
    * @public
    */
   public isStrict: boolean;
-  protected left: Reference[] | null = [];
+  /**
+   * List of {@link Reference}s that are left to be resolved (i.e. which
+   * need to be linked to the variable they refer to).
+   */
+  protected leftToResolve: Reference[] | null = [];
   /**
    * Any variable {@link Reference} found in this scope.
    * This includes occurrences of local variables as well as variables from parent scopes (including the global scope).
@@ -257,13 +262,12 @@ class ScopeBase<
     // On global scope, let/const/class declarations should be resolved statically.
     const name = ref.identifier.name;
 
-    if (!this.set.has(name)) {
+    const variable = this.set.get(name);
+    if (!variable) {
       return false;
     }
 
-    const variable = this.set.get(name);
-    const defs = variable?.defs;
-
+    const defs = variable.defs;
     return (
       defs != null && defs.length > 0 && defs.every(shouldBeStaticallyClosed)
     );
@@ -333,12 +337,13 @@ class ScopeBase<
     }
 
     // Try Resolving all references in this scope.
-    for (let i = 0, iz = this.left!.length; i < iz; ++i) {
-      const ref = this.left![i];
+    assert(this.leftToResolve);
+    for (let i = 0; i < this.leftToResolve.length; ++i) {
+      const ref = this.leftToResolve[i];
 
       closeRef(ref);
     }
-    this.left = null;
+    this.leftToResolve = null;
 
     return this.upper;
   }
@@ -353,8 +358,8 @@ class ScopeBase<
 
   protected delegateToUpperScope(ref: Reference): void {
     const upper = (this.upper as Scope) as AnyScope;
-    if (upper?.left) {
-      upper.left.push(ref);
+    if (upper?.leftToResolve) {
+      upper.leftToResolve.push(ref);
     }
     this.through.push(ref);
   }
@@ -424,7 +429,7 @@ class ScopeBase<
     );
 
     this.references.push(ref);
-    this.left?.push(ref);
+    this.leftToResolve?.push(ref);
   }
 
   public referenceType(node: TSESTree.Identifier): void {
@@ -439,7 +444,7 @@ class ScopeBase<
     );
 
     this.references.push(ref);
-    this.left?.push(ref);
+    this.leftToResolve?.push(ref);
   }
 }
 

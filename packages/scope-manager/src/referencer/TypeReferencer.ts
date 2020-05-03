@@ -14,7 +14,7 @@ class TypeReferencer extends Visitor {
     this.referencer = referencer;
   }
 
-  visitTypeDeclaration(
+  protected visitTypeDeclaration(
     name: TSESTree.Identifier,
     node: TSESTree.TSInterfaceDeclaration | TSESTree.TSTypeAliasDeclaration,
   ): void {
@@ -30,17 +30,26 @@ class TypeReferencer extends Visitor {
     this.visit(node.typeParameters);
   }
 
-  TSTypeParameter(node: TSESTree.TSTypeParameter): void {
+  static visit(referencer: Referencer, node: TSESTree.Node): void {
+    const typeReferencer = new TypeReferencer(referencer);
+    typeReferencer.visit(node);
+  }
+
+  protected TSTypeParameter(node: TSESTree.TSTypeParameter): void {
     this.referencer
       .currentScope()
       .defineIdentifier(node.name, new TypeDefinition(node.name, node));
   }
-  TSTypeAliasDeclaration(node: TSESTree.TSTypeAliasDeclaration): void {
+  protected TSTypeAliasDeclaration(
+    node: TSESTree.TSTypeAliasDeclaration,
+  ): void {
     this.visitTypeDeclaration(node.id, node);
     this.visit(node.typeAnnotation);
     this.referencer.close(node);
   }
-  TSInterfaceDeclaration(node: TSESTree.TSInterfaceDeclaration): void {
+  protected TSInterfaceDeclaration(
+    node: TSESTree.TSInterfaceDeclaration,
+  ): void {
     this.visitTypeDeclaration(node.id, node);
     node.extends?.forEach(this.visit, this);
     node.implements?.forEach(this.visit, this);
@@ -48,12 +57,12 @@ class TypeReferencer extends Visitor {
     this.referencer.close(node);
   }
 
-  Identifier(node: TSESTree.Identifier): void {
+  protected Identifier(node: TSESTree.Identifier): void {
     this.referencer.currentScope().referenceType(node);
   }
 
   // a type query `typeof foo` is a special case that references a _non-type_ variable,
-  TSTypeQuery(node: TSESTree.TSTypeQuery): void {
+  protected TSTypeQuery(node: TSESTree.TSTypeQuery): void {
     if (node.exprName.type === AST_NODE_TYPES.Identifier) {
       this.referencer.currentScope().referenceValue(node.exprName);
     } else {
@@ -65,7 +74,7 @@ class TypeReferencer extends Visitor {
     }
   }
 
-  TSQualifiedName(node: TSESTree.TSQualifiedName): void {
+  protected TSQualifiedName(node: TSESTree.TSQualifiedName): void {
     this.visit(node.left);
     // we don't visit the right as it a name
   }

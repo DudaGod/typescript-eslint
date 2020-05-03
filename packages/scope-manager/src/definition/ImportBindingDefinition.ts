@@ -15,7 +15,11 @@ class ImportBindingDefinition extends DefinitionBase<
     decl: TSESTree.ImportDeclaration,
   ) {
     super(DefinitionType.ImportBinding, name, node, decl);
+    this.isVariableDefinition = this.parent.importKind !== 'type';
   }
+
+  public readonly isTypeDefinition = true;
+  public readonly isVariableDefinition: boolean;
 }
 
 export { ImportBindingDefinition };

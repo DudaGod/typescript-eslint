@@ -14,6 +14,9 @@ class VariableDefinition extends DefinitionBase<
   ) {
     super(DefinitionType.Variable, name, node, decl);
   }
+
+  public readonly isTypeDefinition = false;
+  public readonly isVariableDefinition = true;
 }
 
 export { VariableDefinition };
