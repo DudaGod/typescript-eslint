@@ -40,7 +40,8 @@
     "esrecurse": "^4.2.1"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "2.30.0"
+    "@typescript-eslint/parser": "2.30.0",
+    "pretty-format": "^25.5.0"
   },
   "funding": {
     "type": "opencollective",
