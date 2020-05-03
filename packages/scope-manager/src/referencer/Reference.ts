@@ -1,4 +1,5 @@
 import { TSESTree } from '@typescript-eslint/experimental-utils';
+import { createIdGenerator } from '../ID';
 import { Scope } from '../scope';
 import { Variable } from '../Variable';
 
@@ -14,10 +15,16 @@ interface ReferenceImplicitGlobal {
   ref?: Reference;
 }
 
+const generator = createIdGenerator();
+
 /**
  * A Reference represents a single occurrence of an identifier in code.
  */
 class Reference {
+  /**
+   * A unique ID for this instance - primarily used to help debugging and testing
+   */
+  public readonly $id: number = generator();
   /**
    * The read-write mode of the reference.
    */

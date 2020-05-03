@@ -1,4 +1,5 @@
 import * as tseslint from '@typescript-eslint/parser';
+import { analyze } from '../../src/analyze';
 
 function parse(
   code: string,
@@ -12,4 +13,16 @@ function parse(
   });
 }
 
-export { parse };
+function parseAndAnalyze(
+  code: string,
+  sourceType?: tseslint.ParserOptions['sourceType'],
+): {
+  ast: ReturnType<typeof tseslint.parse>;
+  scopeManager: ReturnType<typeof analyze>;
+} {
+  const ast = parse(code, sourceType);
+  const scopeManager = analyze(ast);
+  return { ast, scopeManager };
+}
+
+export { parse, parseAndAnalyze };

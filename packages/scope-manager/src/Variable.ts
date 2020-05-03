@@ -4,13 +4,21 @@ import {
   TypeDefinitionTypes,
   ValueDefinitionTypes,
 } from './definition';
+import { createIdGenerator } from './ID';
 import { Reference } from './referencer/Reference';
 import { Scope } from './scope';
+
+const generator = createIdGenerator();
 
 /**
  * A Variable represents a locally scoped identifier. These include arguments to functions.
  */
 class Variable {
+  /**
+   * A unique ID for this instance - primarily used to help debugging and testing
+   */
+  public readonly $id: number = generator();
+
   /**
    * The array of the definitions of this variable.
    * @public

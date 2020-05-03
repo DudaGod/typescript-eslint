@@ -1,4 +1,4 @@
-import { TSESTree } from './ts-estree';
+import { TSESTree, AST_NODE_TYPES } from './ts-estree';
 import { visitorKeys } from './visitor-keys';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,23 +14,35 @@ function getVisitorKeysForNode(
   return keys ?? [];
 }
 
-interface SimpleTraverseOptions {
-  enter: (node: TSESTree.Node, parent: TSESTree.Node | undefined) => void;
-}
+type SimpleTraverseOptions =
+  | {
+      [type in AST_NODE_TYPES]?: (
+        node: Extract<TSESTree.Node, { type: type }>,
+        parent: TSESTree.Node | undefined,
+      ) => void;
+    }
+  | {
+      enter: (node: TSESTree.Node, parent: TSESTree.Node | undefined) => void;
+    };
 
 class SimpleTraverser {
-  private allVisitorKeys = visitorKeys;
-  private enter: SimpleTraverseOptions['enter'];
+  private readonly allVisitorKeys = visitorKeys;
+  private readonly selectors: SimpleTraverseOptions;
 
-  constructor({ enter }: SimpleTraverseOptions) {
-    this.enter = enter;
+  constructor(selectors: SimpleTraverseOptions) {
+    this.selectors = selectors;
   }
 
   traverse(node: unknown, parent: TSESTree.Node | undefined): void {
     if (!isValidNode(node)) {
       return;
     }
-    this.enter(node, parent);
+
+    if ('enter' in this.selectors) {
+      this.selectors.enter(node, parent);
+    } else if (node.type in this.selectors) {
+      this.selectors[node.type]?.(node as never, parent);
+    }
 
     const keys = getVisitorKeysForNode(this.allVisitorKeys, node);
     if (keys.length < 1) {

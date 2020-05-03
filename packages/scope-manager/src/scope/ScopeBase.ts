@@ -9,6 +9,7 @@ import { ScopeManager } from '../ScopeManager';
 import { BlockNode, Scope } from './Scope';
 import { ModuleScope } from './ModuleScope';
 import { Definition, DefinitionType } from '../definition';
+import { createIdGenerator } from '../ID';
 import {
   Reference,
   ReferenceFlag,
@@ -126,12 +127,19 @@ function shouldBeStaticallyClosed(def: Definition): boolean {
   );
 }
 
+const generator = createIdGenerator();
+
 type AnyScope = ScopeBase<ScopeType, BlockNode, Scope | null>;
-abstract class ScopeBase<
+class ScopeBase<
   TType extends ScopeType,
   TBlock extends BlockNode,
   TUpper extends Scope | null
 > {
+  /**
+   * A unique ID for this instance - primarily used to help debugging and testing
+   */
+  public readonly $id: number = generator();
+
   /**
    * The AST node which created this scope.
    * @public

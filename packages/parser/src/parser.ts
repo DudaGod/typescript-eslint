@@ -96,16 +96,11 @@ export function parseForESLint(
   ast.sourceType = options.sourceType;
 
   simpleTraverse(ast, {
-    enter(node) {
-      switch (node.type) {
-        // Function#body cannot be null in ESTree spec.
-        case AST_NODE_TYPES.FunctionExpression:
-          if (!node.body) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            node.type = `TSEmptyBody${node.type}` as any;
-          }
-          break;
-        // no default
+    FunctionExpression(node: TSESTree.FunctionExpression) {
+      // Function#body cannot be null in ESTree spec.
+      if (!node.body) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        node.type = `TSEmptyBody${node.type}` as any;
       }
     },
   });
