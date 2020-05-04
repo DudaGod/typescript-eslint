@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`type-declaration interface-generics 1`] = `
+ScopeManager {
+  variables: Array [
+    Variable$1 {
+      defs: Array [
+        TypeDefinition$1 {
+          name: Identifier<"A">,
+          node: TSInterfaceDeclaration$1,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"A">,
+      ],
+      name: "A",
+      references: Array [],
+    },
+    Variable$2 {
+      defs: Array [
+        TypeDefinition$2 {
+          name: Identifier<"T">,
+          node: TSTypeParameter$2,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"T">,
+      ],
+      name: "T",
+      references: Array [
+        Reference$1 {
+          identifier: Identifier<"T">,
+          isTypeReference: true,
+          resolved: Variable$2,
+        },
+      ],
+    },
+    Variable$3 {
+      defs: Array [
+        TypeDefinition$3 {
+          name: Identifier<"Unresolved">,
+          node: TSTypeAliasDeclaration$3,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"Unresolved">,
+      ],
+      name: "Unresolved",
+      references: Array [],
+    },
+  ],
+  scopes: Array [
+    GlobalScope$1 {
+      block: Program$4,
+      isStrict: false,
+      references: Array [],
+      set: Map {
+        "A" => Variable$1,
+        "Unresolved" => Variable$3,
+      },
+      type: "global",
+      upper: null,
+      variables: Array [
+        Variable$1,
+        Variable$3,
+      ],
+    },
+    TypeScope$2 {
+      block: TSInterfaceDeclaration$1,
+      isStrict: false,
+      references: Array [
+        Reference$1,
+        Reference$2 {
+          identifier: Identifier<"prop">,
+          isTypeReference: true,
+          resolved: null,
+        },
+      ],
+      set: Map {
+        "T" => Variable$2,
+      },
+      type: "type",
+      upper: GlobalScope$1,
+      variables: Array [
+        Variable$2,
+      ],
+    },
+    TypeScope$3 {
+      block: TSTypeAliasDeclaration$3,
+      isStrict: false,
+      references: Array [
+        Reference$3 {
+          identifier: Identifier<"T">,
+          isTypeReference: true,
+          resolved: null,
+        },
+      ],
+      set: Map {},
+      type: "type",
+      upper: GlobalScope$1,
+      variables: Array [],
+    },
+  ],
+}
+`;

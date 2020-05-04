@@ -1,0 +1,249 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`class expression parameter-properties 1`] = `
+ScopeManager {
+  variables: Array [
+    Variable$1 {
+      defs: Array [
+        VariableDefinition$1 {
+          name: Identifier<"outer">,
+          node: VariableDeclarator$1,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"outer">,
+      ],
+      name: "outer",
+      references: Array [
+        Reference$1 {
+          identifier: Identifier<"outer">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$1,
+          writeExpr: Literal$2,
+        },
+        Reference$7 {
+          identifier: Identifier<"outer">,
+          isTypeReference: false,
+          resolved: Variable$1,
+        },
+      ],
+    },
+    Variable$2 {
+      defs: Array [
+        VariableDefinition$2 {
+          name: Identifier<"A">,
+          node: VariableDeclarator$3,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"A">,
+      ],
+      name: "A",
+      references: Array [
+        Reference$2 {
+          identifier: Identifier<"A">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$2,
+          writeExpr: ClassExpression$4,
+        },
+      ],
+    },
+    Variable$3 {
+      defs: Array [],
+      identifiers: Array [],
+      name: "arguments",
+      references: Array [],
+    },
+    Variable$4 {
+      defs: Array [
+        ParameterDefinition$3 {
+          name: Identifier<"a">,
+          node: FunctionExpression$5,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"a">,
+      ],
+      name: "a",
+      references: Array [
+        Reference$5 {
+          identifier: Identifier<"a">,
+          isTypeReference: false,
+          resolved: Variable$4,
+        },
+        Reference$8 {
+          identifier: Identifier<"a">,
+          isTypeReference: false,
+          resolved: Variable$4,
+        },
+      ],
+    },
+    Variable$5 {
+      defs: Array [
+        ParameterDefinition$4 {
+          name: Identifier<"b">,
+          node: FunctionExpression$5,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"b">,
+      ],
+      name: "b",
+      references: Array [
+        Reference$3 {
+          identifier: Identifier<"b">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$5,
+          writeExpr: Literal$6,
+        },
+      ],
+    },
+    Variable$6 {
+      defs: Array [
+        ParameterDefinition$5 {
+          name: Identifier<"c">,
+          node: FunctionExpression$5,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"c">,
+      ],
+      name: "c",
+      references: Array [
+        Reference$4 {
+          identifier: Identifier<"c">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$6,
+          writeExpr: Identifier<"a">,
+        },
+      ],
+    },
+    Variable$7 {
+      defs: Array [
+        ParameterDefinition$6 {
+          name: Identifier<"d">,
+          node: FunctionExpression$5,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"d">,
+      ],
+      name: "d",
+      references: Array [
+        Reference$6 {
+          identifier: Identifier<"d">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$7,
+          writeExpr: Identifier<"outer">,
+        },
+      ],
+    },
+    Variable$8 {
+      defs: Array [
+        ParameterDefinition$7 {
+          name: Identifier<"e">,
+          node: FunctionExpression$5,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"e">,
+      ],
+      name: "e",
+      references: Array [],
+    },
+    Variable$9 {
+      defs: Array [
+        VariableDefinition$8 {
+          name: Identifier<"unresovled">,
+          node: VariableDeclarator$7,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"unresovled">,
+      ],
+      name: "unresovled",
+      references: Array [
+        Reference$9 {
+          identifier: Identifier<"unresovled">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$9,
+          writeExpr: Identifier<"e">,
+        },
+      ],
+    },
+  ],
+  scopes: Array [
+    GlobalScope$1 {
+      block: Program$8,
+      isStrict: false,
+      references: Array [
+        Reference$1,
+        Reference$2,
+        Reference$9,
+        Reference$10 {
+          identifier: Identifier<"e">,
+          isTypeReference: false,
+          resolved: null,
+        },
+      ],
+      set: Map {
+        "outer" => Variable$1,
+        "A" => Variable$2,
+        "unresovled" => Variable$9,
+      },
+      type: "global",
+      upper: null,
+      variables: Array [
+        Variable$1,
+        Variable$2,
+        Variable$9,
+      ],
+    },
+    ClassScope$2 {
+      block: ClassExpression$4,
+      isStrict: true,
+      references: Array [],
+      set: Map {},
+      type: "class",
+      upper: GlobalScope$1,
+      variables: Array [],
+    },
+    FunctionScope$3 {
+      block: FunctionExpression$5,
+      isStrict: true,
+      references: Array [
+        Reference$3,
+        Reference$4,
+        Reference$5,
+        Reference$6,
+        Reference$7,
+        Reference$8,
+      ],
+      set: Map {
+        "arguments" => Variable$3,
+        "a" => Variable$4,
+        "b" => Variable$5,
+        "c" => Variable$6,
+        "d" => Variable$7,
+        "e" => Variable$8,
+      },
+      type: "function",
+      upper: ClassScope$2,
+      variables: Array [
+        Variable$3,
+        Variable$4,
+        Variable$5,
+        Variable$6,
+        Variable$7,
+        Variable$8,
+      ],
+    },
+  ],
+}
+`;

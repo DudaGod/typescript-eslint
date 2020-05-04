@@ -13,10 +13,7 @@ describe('variable definition', () => {
           defs: Array [
             TypeDefinition$1 {
               name: Identifier<"TypeDecl">,
-              node: TSTypeAliasDeclaration$1 {
-                id: Identifier<"TypeDecl">,
-                typeAnnotation: TSStringKeyword,
-              },
+              node: TSTypeAliasDeclaration$1,
             },
           ],
           identifiers: Array [
@@ -42,20 +39,7 @@ describe('variable definition', () => {
           defs: Array [
             TypeDefinition$1 {
               name: Identifier<"InterfaceDecl">,
-              node: TSInterfaceDeclaration$4 {
-                body: TSInterfaceBody$3 {
-                  body: Array [
-                    TSPropertySignature$2 {
-                      computed: false,
-                      key: Identifier<"prop">,
-                      typeAnnotation: TSTypeAnnotation$1 {
-                        typeAnnotation: TSStringKeyword,
-                      },
-                    },
-                  ],
-                },
-                id: Identifier<"InterfaceDecl">,
-              },
+              node: TSInterfaceDeclaration$1,
             },
           ],
           identifiers: Array [
@@ -79,9 +63,7 @@ describe('variable definition', () => {
           defs: Array [
             TypeDefinition$2 {
               name: Identifier<"TypeParam">,
-              node: TSTypeParameter$1 {
-                name: Identifier<"TypeParam">,
-              },
+              node: TSTypeParameter$1,
             },
           ],
           identifiers: Array [
@@ -109,9 +91,7 @@ describe('variable definition', () => {
           defs: Array [
             TypeDefinition$3 {
               name: Identifier<"Inferred">,
-              node: TSTypeParameter$1 {
-                name: Identifier<"Inferred">,
-              },
+              node: TSTypeParameter$1,
             },
           ],
           identifiers: Array [

@@ -12,7 +12,8 @@
     "**/*.{json,snap}",
     ".cspell.json",
     "yarn.lock",
-    ".github/workflows/**"
+    ".github/workflows/**",
+    ".vscode/*.json"
   ],
   "dictionaries": [
     "typescript",

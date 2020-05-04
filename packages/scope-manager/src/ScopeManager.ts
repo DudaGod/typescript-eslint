@@ -26,19 +26,29 @@ interface ScopeManagerOptions {
 
 class ScopeManager {
   public currentScope: Scope | null;
-  public declaredVariables: WeakMap<TSESTree.Node, Variable[]>;
+  public readonly declaredVariables: WeakMap<TSESTree.Node, Variable[]>;
   /**
    * The root scope
    * @public
    */
   public globalScope: GlobalScope | null;
-  public nodeToScope: WeakMap<TSESTree.Node, Scope[]>;
-  private options: ScopeManagerOptions;
+  public readonly nodeToScope: WeakMap<TSESTree.Node, Scope[]>;
+  private readonly options: ScopeManagerOptions;
   /**
    * All scopes
    * @public
    */
-  public scopes: Scope[];
+  public readonly scopes: Scope[];
+
+  public get variables(): Variable[] {
+    const variables = new Set<Variable>();
+    function recurse(scope: Scope): void {
+      scope.variables.forEach(v => variables.add(v));
+      scope.childScopes.forEach(recurse);
+    }
+    this.scopes.forEach(recurse);
+    return Array.from(variables).sort((a, b) => a.$id - b.$id);
+  }
 
   constructor(options: ScopeManagerOptions) {
     this.scopes = [];

@@ -1,5 +1,4 @@
 import { parseAndAnalyze } from '../util';
-import { analyze } from '../../src/analyze';
 
 describe('References:', () => {
   describe('When there is a `let` declaration on global,', () => {

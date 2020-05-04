@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`type-declaration type2 1`] = `
+ScopeManager {
+  variables: Array [
+    Variable$1 {
+      defs: Array [
+        TypeDefinition$1 {
+          name: Identifier<"A">,
+          node: TSTypeAliasDeclaration$1,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"A">,
+      ],
+      name: "A",
+      references: Array [
+        Reference$1 {
+          identifier: Identifier<"A">,
+          isTypeReference: true,
+          resolved: Variable$1,
+        },
+      ],
+    },
+    Variable$2 {
+      defs: Array [
+        TypeDefinition$2 {
+          name: Identifier<"B">,
+          node: TSTypeAliasDeclaration$2,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"B">,
+      ],
+      name: "B",
+      references: Array [],
+    },
+  ],
+  scopes: Array [
+    GlobalScope$1 {
+      block: Program$3,
+      isStrict: false,
+      references: Array [],
+      set: Map {
+        "A" => Variable$1,
+        "B" => Variable$2,
+      },
+      type: "global",
+      upper: null,
+      variables: Array [
+        Variable$1,
+        Variable$2,
+      ],
+    },
+    TypeScope$2 {
+      block: TSTypeAliasDeclaration$1,
+      isStrict: false,
+      references: Array [],
+      set: Map {},
+      type: "type",
+      upper: GlobalScope$1,
+      variables: Array [],
+    },
+    TypeScope$3 {
+      block: TSTypeAliasDeclaration$2,
+      isStrict: false,
+      references: Array [
+        Reference$1,
+      ],
+      set: Map {},
+      type: "type",
+      upper: GlobalScope$1,
+      variables: Array [],
+    },
+  ],
+}
+`;

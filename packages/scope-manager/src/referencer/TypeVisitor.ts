@@ -14,6 +14,11 @@ class TypeVisitor extends Visitor {
     this.referencer = referencer;
   }
 
+  static visit(referencer: Referencer, node: TSESTree.Node): void {
+    const typeReferencer = new TypeVisitor(referencer);
+    typeReferencer.visit(node);
+  }
+
   protected visitTypeDeclaration(
     name: TSESTree.Identifier,
     node: TSESTree.TSInterfaceDeclaration | TSESTree.TSTypeAliasDeclaration,
@@ -22,17 +27,10 @@ class TypeVisitor extends Visitor {
       .currentScope()
       .defineIdentifier(name, new TypeDefinition(name, node));
 
-    if (node.typeParameters) {
-      // type parameters cannot be referenced from outside their current scope
-      this.referencer.scopeManager.nestTypeScope(node);
-    }
+    // type parameters cannot be referenced from outside their current scope
+    this.referencer.scopeManager.nestTypeScope(node);
 
     this.visit(node.typeParameters);
-  }
-
-  static visit(referencer: Referencer, node: TSESTree.Node): void {
-    const typeReferencer = new TypeVisitor(referencer);
-    typeReferencer.visit(node);
   }
 
   protected TSTypeParameter(node: TSESTree.TSTypeParameter): void {

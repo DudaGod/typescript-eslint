@@ -1,0 +1,270 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`functions function-expression params 1`] = `
+ScopeManager {
+  variables: Array [
+    Variable$1 {
+      defs: Array [
+        VariableDefinition$1 {
+          name: Identifier<"outer">,
+          node: VariableDeclarator$1,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"outer">,
+      ],
+      name: "outer",
+      references: Array [
+        Reference$1 {
+          identifier: Identifier<"outer">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$1,
+          writeExpr: Literal$2,
+        },
+        Reference$7 {
+          identifier: Identifier<"outer">,
+          isTypeReference: false,
+          resolved: Variable$1,
+        },
+      ],
+    },
+    Variable$2 {
+      defs: Array [
+        VariableDefinition$2 {
+          name: Identifier<"foo">,
+          node: VariableDeclarator$3,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"foo">,
+      ],
+      name: "foo",
+      references: Array [
+        Reference$2 {
+          identifier: Identifier<"foo">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$2,
+          writeExpr: FunctionExpression$4,
+        },
+      ],
+    },
+    Variable$3 {
+      defs: Array [],
+      identifiers: Array [],
+      name: "arguments",
+      references: Array [],
+    },
+    Variable$4 {
+      defs: Array [
+        ParameterDefinition$3 {
+          name: Identifier<"a">,
+          node: FunctionExpression$4,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"a">,
+      ],
+      name: "a",
+      references: Array [
+        Reference$5 {
+          identifier: Identifier<"a">,
+          isTypeReference: false,
+          resolved: Variable$4,
+        },
+        Reference$8 {
+          identifier: Identifier<"a">,
+          isTypeReference: false,
+          resolved: Variable$4,
+        },
+      ],
+    },
+    Variable$5 {
+      defs: Array [
+        ParameterDefinition$4 {
+          name: Identifier<"b">,
+          node: FunctionExpression$4,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"b">,
+      ],
+      name: "b",
+      references: Array [],
+    },
+    Variable$6 {
+      defs: Array [
+        ParameterDefinition$5 {
+          name: Identifier<"c">,
+          node: FunctionExpression$4,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"c">,
+      ],
+      name: "c",
+      references: Array [],
+    },
+    Variable$7 {
+      defs: Array [
+        ParameterDefinition$6 {
+          name: Identifier<"d">,
+          node: FunctionExpression$4,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"d">,
+      ],
+      name: "d",
+      references: Array [
+        Reference$3 {
+          identifier: Identifier<"d">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$7,
+          writeExpr: Literal$5,
+        },
+      ],
+    },
+    Variable$8 {
+      defs: Array [
+        ParameterDefinition$7 {
+          name: Identifier<"e">,
+          node: FunctionExpression$4,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"e">,
+      ],
+      name: "e",
+      references: Array [
+        Reference$4 {
+          identifier: Identifier<"e">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$8,
+          writeExpr: Identifier<"a">,
+        },
+      ],
+    },
+    Variable$9 {
+      defs: Array [
+        ParameterDefinition$8 {
+          name: Identifier<"f">,
+          node: FunctionExpression$4,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"f">,
+      ],
+      name: "f",
+      references: Array [
+        Reference$6 {
+          identifier: Identifier<"f">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$9,
+          writeExpr: Identifier<"outer">,
+        },
+      ],
+    },
+    Variable$10 {
+      defs: Array [
+        ParameterDefinition$9 {
+          name: Identifier<"g">,
+          node: FunctionExpression$4,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"g">,
+      ],
+      name: "g",
+      references: Array [],
+    },
+    Variable$11 {
+      defs: Array [
+        VariableDefinition$10 {
+          name: Identifier<"unresolved">,
+          node: VariableDeclarator$6,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"unresolved">,
+      ],
+      name: "unresolved",
+      references: Array [
+        Reference$9 {
+          identifier: Identifier<"unresolved">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$11,
+          writeExpr: Identifier<"g">,
+        },
+      ],
+    },
+  ],
+  scopes: Array [
+    GlobalScope$1 {
+      block: Program$7,
+      isStrict: false,
+      references: Array [
+        Reference$1,
+        Reference$2,
+        Reference$9,
+        Reference$10 {
+          identifier: Identifier<"g">,
+          isTypeReference: false,
+          resolved: null,
+        },
+      ],
+      set: Map {
+        "outer" => Variable$1,
+        "foo" => Variable$2,
+        "unresolved" => Variable$11,
+      },
+      type: "global",
+      upper: null,
+      variables: Array [
+        Variable$1,
+        Variable$2,
+        Variable$11,
+      ],
+    },
+    FunctionScope$2 {
+      block: FunctionExpression$4,
+      isStrict: false,
+      references: Array [
+        Reference$3,
+        Reference$4,
+        Reference$5,
+        Reference$6,
+        Reference$7,
+        Reference$8,
+      ],
+      set: Map {
+        "arguments" => Variable$3,
+        "a" => Variable$4,
+        "b" => Variable$5,
+        "c" => Variable$6,
+        "d" => Variable$7,
+        "e" => Variable$8,
+        "f" => Variable$9,
+        "g" => Variable$10,
+      },
+      type: "function",
+      upper: GlobalScope$1,
+      variables: Array [
+        Variable$3,
+        Variable$4,
+        Variable$5,
+        Variable$6,
+        Variable$7,
+        Variable$8,
+        Variable$9,
+        Variable$10,
+      ],
+    },
+  ],
+}
+`;

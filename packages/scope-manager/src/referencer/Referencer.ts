@@ -276,6 +276,13 @@ class Referencer extends Visitor {
     TypeVisitor.visit(this, node);
   }
 
+  protected visitTypeAssertion(
+    node: TSESTree.TSAsExpression | TSESTree.TSTypeAssertion,
+  ): void {
+    this.visit(node.expression);
+    this.visitType(node.typeAnnotation);
+  }
+
   /////////////////////
   // Visit selectors //
   /////////////////////
@@ -551,7 +558,7 @@ class Referencer extends Visitor {
   }
 
   protected TSAsExpression(node: TSESTree.TSAsExpression): void {
-    this.visitType(node);
+    this.visitTypeAssertion(node);
   }
 
   protected TSDeclareFunction(node: TSESTree.TSDeclareFunction): void {
@@ -589,6 +596,10 @@ class Referencer extends Visitor {
     node: TSESTree.TSTypeAliasDeclaration,
   ): void {
     this.visitType(node);
+  }
+
+  protected TSTypeAssertion(node: TSESTree.TSTypeAssertion): void {
+    this.visitTypeAssertion(node);
   }
 
   protected UpdateExpression(node: TSESTree.UpdateExpression): void {

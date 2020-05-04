@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`functions function-declaration inherited-scope 1`] = `
+ScopeManager {
+  variables: Array [
+    Variable$1 {
+      defs: Array [
+        VariableDefinition$1 {
+          name: Identifier<"parentScoped">,
+          node: VariableDeclarator$1,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"parentScoped">,
+      ],
+      name: "parentScoped",
+      references: Array [
+        Reference$1 {
+          identifier: Identifier<"parentScoped">,
+          init: true,
+          isTypeReference: false,
+          resolved: Variable$1,
+          writeExpr: Literal$2,
+        },
+        Reference$2 {
+          identifier: Identifier<"parentScoped">,
+          isTypeReference: false,
+          resolved: Variable$1,
+        },
+      ],
+    },
+    Variable$2 {
+      defs: Array [
+        FunctionNameDefinition$2 {
+          name: Identifier<"foo">,
+          node: FunctionDeclaration$3,
+        },
+      ],
+      identifiers: Array [
+        Identifier<"foo">,
+      ],
+      name: "foo",
+      references: Array [],
+    },
+    Variable$3 {
+      defs: Array [],
+      identifiers: Array [],
+      name: "arguments",
+      references: Array [],
+    },
+  ],
+  scopes: Array [
+    GlobalScope$1 {
+      block: Program$4,
+      isStrict: false,
+      references: Array [
+        Reference$1,
+      ],
+      set: Map {
+        "parentScoped" => Variable$1,
+        "foo" => Variable$2,
+      },
+      type: "global",
+      upper: null,
+      variables: Array [
+        Variable$1,
+        Variable$2,
+      ],
+    },
+    FunctionScope$2 {
+      block: FunctionDeclaration$3,
+      isStrict: false,
+      references: Array [
+        Reference$2,
+      ],
+      set: Map {
+        "arguments" => Variable$3,
+      },
+      type: "function",
+      upper: GlobalScope$1,
+      variables: Array [
+        Variable$3,
+      ],
+    },
+  ],
+}
+`;
