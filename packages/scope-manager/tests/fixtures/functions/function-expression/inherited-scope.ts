@@ -1,5 +1,5 @@
 const parentScoped = 1;
 
-const foo = function() {
+const foo = function () {
   parentScoped + 1;
 };
