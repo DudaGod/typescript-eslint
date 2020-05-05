@@ -10,9 +10,6 @@ ScopeManager {
           node: ImportSpecifier$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"T">,
-      ],
       name: "T",
       references: Array [
         Reference$1 {
@@ -21,6 +18,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
     Variable$2 {
       defs: Array [
@@ -29,11 +28,10 @@ ScopeManager {
           node: TSTypeAliasDeclaration$2,
         },
       ],
-      identifiers: Array [
-        Identifier<"Ref">,
-      ],
       name: "Ref",
       references: Array [],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
     Variable$3 {
       defs: Array [
@@ -41,9 +39,6 @@ ScopeManager {
           name: Identifier<"unresovled">,
           node: VariableDeclarator$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"unresovled">,
       ],
       name: "unresovled",
       references: Array [
@@ -55,6 +50,8 @@ ScopeManager {
           writeExpr: Identifier<"T">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
   ],
   scopes: Array [
@@ -71,6 +68,7 @@ ScopeManager {
       block: Program$4,
       isStrict: true,
       references: Array [
+        Reference$1,
         Reference$2,
         Reference$3 {
           identifier: Identifier<"T">,
@@ -90,17 +88,6 @@ ScopeManager {
         Variable$2,
         Variable$3,
       ],
-    },
-    TypeScope$3 {
-      block: TSTypeAliasDeclaration$2,
-      isStrict: true,
-      references: Array [
-        Reference$1,
-      ],
-      set: Map {},
-      type: "type",
-      upper: ModuleScope$2,
-      variables: Array [],
     },
   ],
 }

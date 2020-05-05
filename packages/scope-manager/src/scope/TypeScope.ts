@@ -6,7 +6,7 @@ import { ScopeManager } from '../ScopeManager';
 
 class TypeScope extends ScopeBase<
   ScopeType.type,
-  TSESTree.TSTypeAliasDeclaration | TSESTree.TSInterfaceDeclaration,
+  TSESTree.TSInterfaceDeclaration | TSESTree.TSTypeAliasDeclaration,
   Scope
 > {
   constructor(

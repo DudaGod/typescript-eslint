@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"x">,
-      ],
       name: "x",
       references: Array [
         Reference$1 {
@@ -28,6 +25,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [
@@ -36,11 +35,10 @@ ScopeManager {
           node: TSTypeAliasDeclaration$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"T">,
-      ],
       name: "T",
       references: Array [],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
     Variable$3 {
       defs: Array [
@@ -49,11 +47,10 @@ ScopeManager {
           node: TSTypeAliasDeclaration$4,
         },
       ],
-      identifiers: Array [
-        Identifier<"Unresolved">,
-      ],
       name: "Unresolved",
       references: Array [],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [
@@ -62,6 +59,12 @@ ScopeManager {
       isStrict: false,
       references: Array [
         Reference$1,
+        Reference$2,
+        Reference$3 {
+          identifier: Identifier<"x">,
+          isTypeReference: true,
+          resolved: null,
+        },
       ],
       set: Map {
         "x" => Variable$1,
@@ -75,32 +78,6 @@ ScopeManager {
         Variable$2,
         Variable$3,
       ],
-    },
-    TypeScope$2 {
-      block: TSTypeAliasDeclaration$3,
-      isStrict: false,
-      references: Array [
-        Reference$2,
-      ],
-      set: Map {},
-      type: "type",
-      upper: GlobalScope$1,
-      variables: Array [],
-    },
-    TypeScope$3 {
-      block: TSTypeAliasDeclaration$4,
-      isStrict: false,
-      references: Array [
-        Reference$3 {
-          identifier: Identifier<"x">,
-          isTypeReference: true,
-          resolved: null,
-        },
-      ],
-      set: Map {},
-      type: "type",
-      upper: GlobalScope$1,
-      variables: Array [],
     },
   ],
 }

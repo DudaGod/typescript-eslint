@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"outer">,
-      ],
       name: "outer",
       references: Array [
         Reference$1 {
@@ -28,6 +25,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [
@@ -35,9 +34,6 @@ ScopeManager {
           name: Identifier<"a">,
           node: ArrowFunctionExpression$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"a">,
       ],
       name: "a",
       references: Array [
@@ -52,6 +48,8 @@ ScopeManager {
           resolved: Variable$2,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$3 {
       defs: Array [
@@ -60,11 +58,10 @@ ScopeManager {
           node: ArrowFunctionExpression$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"b">,
-      ],
       name: "b",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$4 {
       defs: Array [
@@ -73,11 +70,10 @@ ScopeManager {
           node: ArrowFunctionExpression$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"c">,
-      ],
       name: "c",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$5 {
       defs: Array [
@@ -85,9 +81,6 @@ ScopeManager {
           name: Identifier<"d">,
           node: ArrowFunctionExpression$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"d">,
       ],
       name: "d",
       references: Array [
@@ -99,6 +92,8 @@ ScopeManager {
           writeExpr: Literal$4,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$6 {
       defs: Array [
@@ -106,9 +101,6 @@ ScopeManager {
           name: Identifier<"e">,
           node: ArrowFunctionExpression$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"e">,
       ],
       name: "e",
       references: Array [
@@ -120,6 +112,8 @@ ScopeManager {
           writeExpr: Identifier<"a">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$7 {
       defs: Array [
@@ -127,9 +121,6 @@ ScopeManager {
           name: Identifier<"f">,
           node: ArrowFunctionExpression$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"f">,
       ],
       name: "f",
       references: Array [
@@ -141,6 +132,8 @@ ScopeManager {
           writeExpr: Identifier<"outer">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$8 {
       defs: Array [
@@ -149,11 +142,10 @@ ScopeManager {
           node: ArrowFunctionExpression$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"g">,
-      ],
       name: "g",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$9 {
       defs: Array [
@@ -161,9 +153,6 @@ ScopeManager {
           name: Identifier<"unresolved">,
           node: VariableDeclarator$5,
         },
-      ],
-      identifiers: Array [
-        Identifier<"unresolved">,
       ],
       name: "unresolved",
       references: Array [
@@ -175,6 +164,8 @@ ScopeManager {
           writeExpr: Identifier<"g">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
   ],
   scopes: Array [

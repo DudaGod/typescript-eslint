@@ -6,7 +6,7 @@ import { FunctionScope } from './FunctionScope';
 import { GlobalScope } from './GlobalScope';
 import { ScopeType } from './ScopeType';
 import { ScopeManager } from '../ScopeManager';
-import { BlockNode, Scope } from './Scope';
+import { Scope } from './Scope';
 import { ModuleScope } from './ModuleScope';
 import { assert } from '../assert';
 import { Definition, DefinitionType } from '../definition';
@@ -23,7 +23,7 @@ import { Variable } from '../Variable';
  */
 function isStrictScope(
   scope: Scope,
-  block: BlockNode,
+  block: TSESTree.Node,
   isMethodDefinition: boolean,
 ): boolean {
   let body: TSESTree.BlockStatement | TSESTree.Program | null | undefined;
@@ -37,7 +37,13 @@ function isStrictScope(
     return true;
   }
 
-  if (scope.type === ScopeType.class || scope.type === ScopeType.module) {
+  if (
+    scope.type === ScopeType.class ||
+    scope.type === ScopeType.module ||
+    scope.type === ScopeType.type ||
+    scope.type === ScopeType.conditionalType ||
+    scope.type === ScopeType.functionType
+  ) {
     return true;
   }
 
@@ -130,10 +136,10 @@ function shouldBeStaticallyClosed(def: Definition): boolean {
 
 const generator = createIdGenerator();
 
-type AnyScope = ScopeBase<ScopeType, BlockNode, Scope | null>;
+type AnyScope = ScopeBase<ScopeType, TSESTree.Node, Scope | null>;
 abstract class ScopeBase<
   TType extends ScopeType,
-  TBlock extends BlockNode,
+  TBlock extends TSESTree.Node,
   TUpper extends Scope | null
 > {
   /**

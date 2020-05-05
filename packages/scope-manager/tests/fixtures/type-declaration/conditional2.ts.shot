@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`type-declaration inferred-type 1`] = `
+exports[`type-declaration conditional2 1`] = `
 ScopeManager {
   variables: Array [
     Variable$1 {
@@ -10,11 +10,10 @@ ScopeManager {
           node: TSTypeAliasDeclaration$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"T">,
-      ],
       name: "T",
       references: Array [],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
     Variable$2 {
       defs: Array [
@@ -23,17 +22,16 @@ ScopeManager {
           node: TSTypeParameter$2,
         },
       ],
-      identifiers: Array [
-        Identifier<"U">,
-      ],
       name: "U",
       references: Array [
-        Reference$2 {
+        Reference$1 {
           identifier: Identifier<"U">,
           isTypeReference: true,
           resolved: Variable$2,
         },
       ],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
     Variable$3 {
       defs: Array [
@@ -42,18 +40,23 @@ ScopeManager {
           node: TSTypeAliasDeclaration$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"Unresolved">,
-      ],
       name: "Unresolved",
       references: Array [],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [
     GlobalScope$1 {
       block: Program$4,
       isStrict: false,
-      references: Array [],
+      references: Array [
+        Reference$2 {
+          identifier: Identifier<"U">,
+          isTypeReference: true,
+          resolved: null,
+        },
+      ],
       set: Map {
         "T" => Variable$1,
         "Unresolved" => Variable$3,
@@ -65,40 +68,20 @@ ScopeManager {
         Variable$3,
       ],
     },
-    TypeScope$2 {
-      block: TSTypeAliasDeclaration$1,
-      isStrict: false,
+    ConditionalTypeScope$2 {
+      block: TSConditionalType$5,
+      isStrict: true,
       references: Array [
-        Reference$1 {
-          identifier: Identifier<"Map">,
-          isTypeReference: true,
-          resolved: null,
-        },
-        Reference$2,
+        Reference$1,
       ],
       set: Map {
         "U" => Variable$2,
       },
-      type: "type",
+      type: "conditionalType",
       upper: GlobalScope$1,
       variables: Array [
         Variable$2,
       ],
-    },
-    TypeScope$3 {
-      block: TSTypeAliasDeclaration$3,
-      isStrict: false,
-      references: Array [
-        Reference$3 {
-          identifier: Identifier<"U">,
-          isTypeReference: true,
-          resolved: null,
-        },
-      ],
-      set: Map {},
-      type: "type",
-      upper: GlobalScope$1,
-      variables: Array [],
     },
   ],
 }

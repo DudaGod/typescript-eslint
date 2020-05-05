@@ -4,9 +4,10 @@ import { Variable } from '../../../src/Variable';
 const serializer = createSerializer(Variable, [
   //
   'defs',
-  'identifiers',
   'name',
   'references',
+  'isValueVariable',
+  'isTypeVariable',
 ]);
 
 export { serializer };

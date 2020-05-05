@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"x">,
-      ],
       name: "x",
       references: Array [
         Reference$1 {
@@ -28,6 +25,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [
@@ -36,11 +35,10 @@ ScopeManager {
           node: TSImportEqualsDeclaration$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"foo">,
-      ],
       name: "foo",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [

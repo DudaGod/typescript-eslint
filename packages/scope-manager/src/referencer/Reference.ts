@@ -55,7 +55,7 @@ class Reference {
    */
   public readonly writeExpr?: TSESTree.Node | null;
 
-  public maybeImplicitGlobal?: ReferenceImplicitGlobal | null;
+  public readonly maybeImplicitGlobal?: ReferenceImplicitGlobal | null;
 
   /**
    * True if this reference was created from a type context, false otherwise

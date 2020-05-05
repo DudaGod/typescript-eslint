@@ -10,9 +10,6 @@ ScopeManager {
           node: CatchClause$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"e">,
-      ],
       name: "e",
       references: Array [
         Reference$1 {
@@ -21,6 +18,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [
@@ -28,9 +27,6 @@ ScopeManager {
           name: Identifier<"a">,
           node: VariableDeclarator$2,
         },
-      ],
-      identifiers: Array [
-        Identifier<"a">,
       ],
       name: "a",
       references: Array [
@@ -42,6 +38,8 @@ ScopeManager {
           writeExpr: Literal$3,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$3 {
       defs: Array [
@@ -49,9 +47,6 @@ ScopeManager {
           name: Identifier<"unresolved">,
           node: VariableDeclarator$4,
         },
-      ],
-      identifiers: Array [
-        Identifier<"unresolved">,
       ],
       name: "unresolved",
       references: Array [
@@ -63,6 +58,8 @@ ScopeManager {
           writeExpr: Identifier<"e">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$4 {
       defs: Array [
@@ -70,9 +67,6 @@ ScopeManager {
           name: Identifier<"dontReference2">,
           node: VariableDeclarator$5,
         },
-      ],
-      identifiers: Array [
-        Identifier<"dontReference2">,
       ],
       name: "dontReference2",
       references: Array [
@@ -84,6 +78,8 @@ ScopeManager {
           writeExpr: Identifier<"a">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
   ],
   scopes: Array [

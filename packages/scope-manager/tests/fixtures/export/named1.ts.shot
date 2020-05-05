@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"x">,
-      ],
       name: "x",
       references: Array [
         Reference$1 {
@@ -23,6 +20,8 @@ ScopeManager {
           writeExpr: Literal$2,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
   ],
   scopes: Array [

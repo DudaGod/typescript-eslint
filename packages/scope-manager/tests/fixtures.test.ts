@@ -4,6 +4,12 @@ import makeDir from 'make-dir';
 import path from 'path';
 import { parseAndAnalyze, AnalyzeOptions } from './util';
 
+// Assign a segment set to this variable to limit the test to only this segment
+// This is super helpful if you need to debug why a specific fixture isn't producing the correct output
+// eg. ['type-declaration', 'signatures', 'method-generic'] will only test /type-declaration/signatures/method-generic.ts
+// prettier-ignore
+const ONLY = [].join(path.sep);
+
 const FIXTURES_DIR = path.resolve(__dirname, 'fixtures');
 
 const fixtures = glob
@@ -41,7 +47,7 @@ function nestDescribe(
       nestDescribe(fixture, segments.slice(1));
     });
   } else {
-    it(fixture.name, () => {
+    const test = (): void => {
       const contents = fs.readFileSync(fixture.absolute, 'utf8');
 
       const lines = contents.split('\n');
@@ -85,7 +91,13 @@ function nestDescribe(
       } catch (e) {
         expect(e).toMatchSpecificSnapshot(fixture.snapshotFile);
       }
-    });
+    };
+
+    if ([...fixture.segments, fixture.name].join(path.sep) === ONLY) {
+      it.only(fixture.name, test);
+    } else {
+      it(fixture.name, test);
+    }
   }
 }
 

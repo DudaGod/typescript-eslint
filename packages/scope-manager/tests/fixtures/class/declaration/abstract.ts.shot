@@ -10,11 +10,10 @@ ScopeManager {
           node: ClassDeclaration$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"A">,
-      ],
       name: "A",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$2 {
       defs: Array [
@@ -23,17 +22,17 @@ ScopeManager {
           node: ClassDeclaration$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"A">,
-      ],
       name: "A",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$3 {
       defs: Array [],
-      identifiers: Array [],
       name: "arguments",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$4 {
       defs: Array [
@@ -42,11 +41,10 @@ ScopeManager {
           node: TSEmptyBodyFunctionExpression$2,
         },
       ],
-      identifiers: Array [
-        Identifier<"a">,
-      ],
       name: "a",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$5 {
       defs: Array [
@@ -55,11 +53,10 @@ ScopeManager {
           node: TSEmptyBodyFunctionExpression$2,
         },
       ],
-      identifiers: Array [
-        Identifier<"b">,
-      ],
       name: "b",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
   ],
   scopes: Array [

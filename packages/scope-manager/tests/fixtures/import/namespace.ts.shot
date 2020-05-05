@@ -10,9 +10,6 @@ ScopeManager {
           node: ImportNamespaceSpecifier$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"v">,
-      ],
       name: "v",
       references: Array [
         Reference$1 {
@@ -26,6 +23,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$2 {
       defs: Array [
@@ -34,11 +33,10 @@ ScopeManager {
           node: TSTypeAliasDeclaration$2,
         },
       ],
-      identifiers: Array [
-        Identifier<"T">,
-      ],
       name: "T",
       references: Array [],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [
@@ -56,6 +54,7 @@ ScopeManager {
       isStrict: true,
       references: Array [
         Reference$1,
+        Reference$2,
       ],
       set: Map {
         "v" => Variable$1,
@@ -67,17 +66,6 @@ ScopeManager {
         Variable$1,
         Variable$2,
       ],
-    },
-    TypeScope$3 {
-      block: TSTypeAliasDeclaration$2,
-      isStrict: true,
-      references: Array [
-        Reference$2,
-      ],
-      set: Map {},
-      type: "type",
-      upper: ModuleScope$2,
-      variables: Array [],
     },
   ],
 }

@@ -47,9 +47,12 @@ function createSerializer<TConstructor extends ConstructorSignature>(
       const outputLines = [];
       const childIndentation = indentation + config.indent;
       for (const key of keys) {
-        const value = thing[key as string];
+        let value = thing[key as string];
         if (value === undefined) {
           continue;
+        }
+        if (typeof value === 'function') {
+          value = value.call(thing);
         }
 
         outputLines.push(

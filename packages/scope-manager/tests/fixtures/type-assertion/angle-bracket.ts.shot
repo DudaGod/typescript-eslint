@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"x">,
-      ],
       name: "x",
       references: Array [
         Reference$1 {
@@ -28,6 +25,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [
@@ -35,9 +34,6 @@ ScopeManager {
           name: Identifier<"T">,
           node: TSTypeAliasDeclaration$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"T">,
       ],
       name: "T",
       references: Array [
@@ -47,6 +43,8 @@ ScopeManager {
           resolved: Variable$2,
         },
       ],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [
@@ -68,15 +66,6 @@ ScopeManager {
         Variable$1,
         Variable$2,
       ],
-    },
-    TypeScope$2 {
-      block: TSTypeAliasDeclaration$3,
-      isStrict: false,
-      references: Array [],
-      set: Map {},
-      type: "type",
-      upper: GlobalScope$1,
-      variables: Array [],
     },
   ],
 }

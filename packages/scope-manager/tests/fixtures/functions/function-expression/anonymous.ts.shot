@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"foo">,
-      ],
       name: "foo",
       references: Array [
         Reference$1 {
@@ -23,12 +20,15 @@ ScopeManager {
           writeExpr: FunctionExpression$2,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [],
-      identifiers: Array [],
       name: "arguments",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [

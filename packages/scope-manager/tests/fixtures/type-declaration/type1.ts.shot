@@ -10,11 +10,10 @@ ScopeManager {
           node: TSTypeAliasDeclaration$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"T">,
-      ],
       name: "T",
       references: Array [],
+      isValueVariable: false,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [
@@ -30,15 +29,6 @@ ScopeManager {
       variables: Array [
         Variable$1,
       ],
-    },
-    TypeScope$2 {
-      block: TSTypeAliasDeclaration$1,
-      isStrict: false,
-      references: Array [],
-      set: Map {},
-      type: "type",
-      upper: GlobalScope$1,
-      variables: Array [],
     },
   ],
 }

@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"A">,
-      ],
       name: "A",
       references: Array [
         Reference$1 {
@@ -23,12 +20,15 @@ ScopeManager {
           writeExpr: ClassExpression$2,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [],
-      identifiers: Array [],
       name: "arguments",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$3 {
       defs: Array [
@@ -36,9 +36,6 @@ ScopeManager {
           name: Identifier<"a">,
           node: FunctionExpression$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"a">,
       ],
       name: "a",
       references: Array [
@@ -53,6 +50,8 @@ ScopeManager {
           resolved: Variable$3,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$4 {
       defs: Array [
@@ -61,11 +60,10 @@ ScopeManager {
           node: FunctionExpression$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"b">,
-      ],
       name: "b",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$5 {
       defs: Array [
@@ -74,11 +72,10 @@ ScopeManager {
           node: FunctionExpression$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"c">,
-      ],
       name: "c",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$6 {
       defs: Array [
@@ -86,9 +83,6 @@ ScopeManager {
           name: Identifier<"d">,
           node: FunctionExpression$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"d">,
       ],
       name: "d",
       references: Array [
@@ -100,6 +94,8 @@ ScopeManager {
           writeExpr: Literal$4,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$7 {
       defs: Array [
@@ -107,9 +103,6 @@ ScopeManager {
           name: Identifier<"e">,
           node: FunctionExpression$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"e">,
       ],
       name: "e",
       references: Array [
@@ -121,6 +114,8 @@ ScopeManager {
           writeExpr: Identifier<"a">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$8 {
       defs: Array [
@@ -129,11 +124,10 @@ ScopeManager {
           node: FunctionExpression$3,
         },
       ],
-      identifiers: Array [
-        Identifier<"f">,
-      ],
       name: "f",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$9 {
       defs: Array [
@@ -141,9 +135,6 @@ ScopeManager {
           name: Identifier<"unresolved1">,
           node: VariableDeclarator$5,
         },
-      ],
-      identifiers: Array [
-        Identifier<"unresolved1">,
       ],
       name: "unresolved1",
       references: Array [
@@ -155,6 +146,8 @@ ScopeManager {
           writeExpr: Identifier<"f">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$10 {
       defs: Array [
@@ -162,9 +155,6 @@ ScopeManager {
           name: Identifier<"unresolved2">,
           node: VariableDeclarator$6,
         },
-      ],
-      identifiers: Array [
-        Identifier<"unresolved2">,
       ],
       name: "unresolved2",
       references: Array [
@@ -176,6 +166,8 @@ ScopeManager {
           writeExpr: Identifier<"method">,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
   ],
   scopes: Array [

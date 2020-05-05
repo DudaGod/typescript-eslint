@@ -4,10 +4,13 @@ import {
   BlockScope,
   CatchScope,
   ClassScope,
+  ConditionalTypeScope,
   ForScope,
   FunctionExpressionNameScope,
   FunctionScope,
+  FunctionTypeScope,
   GlobalScope,
+  MappedTypeScope,
   ModuleScope,
   Scope,
   SwitchScope,
@@ -170,6 +173,13 @@ class ScopeManager {
     return this.nestScope(new ClassScope(this, this.currentScope, node));
   }
 
+  public nestConditionalTypeScope(node: ConditionalTypeScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(
+      new ConditionalTypeScope(this, this.currentScope, node),
+    );
+  }
+
   public nestForScope(node: ForScope['block']): Scope {
     assert(this.currentScope);
     return this.nestScope(new ForScope(this, this.currentScope, node));
@@ -194,8 +204,18 @@ class ScopeManager {
     );
   }
 
+  public nestFunctionTypeScope(node: FunctionTypeScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new FunctionTypeScope(this, this.currentScope, node));
+  }
+
   public nestGlobalScope(node: GlobalScope['block']): Scope {
     return this.nestScope(new GlobalScope(this, node));
+  }
+
+  public nestMappedTypeScope(node: MappedTypeScope['block']): Scope {
+    assert(this.currentScope);
+    return this.nestScope(new MappedTypeScope(this, this.currentScope, node));
   }
 
   public nestModuleScope(node: ModuleScope['block']): Scope {

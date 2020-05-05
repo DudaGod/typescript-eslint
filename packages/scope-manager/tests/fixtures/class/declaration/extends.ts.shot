@@ -10,9 +10,6 @@ ScopeManager {
           node: ClassDeclaration$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"A">,
-      ],
       name: "A",
       references: Array [
         Reference$1 {
@@ -21,6 +18,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$2 {
       defs: Array [
@@ -29,11 +28,10 @@ ScopeManager {
           node: ClassDeclaration$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"A">,
-      ],
       name: "A",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$3 {
       defs: Array [
@@ -42,11 +40,10 @@ ScopeManager {
           node: ClassDeclaration$2,
         },
       ],
-      identifiers: Array [
-        Identifier<"B">,
-      ],
       name: "B",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
     Variable$4 {
       defs: Array [
@@ -55,11 +52,10 @@ ScopeManager {
           node: ClassDeclaration$2,
         },
       ],
-      identifiers: Array [
-        Identifier<"B">,
-      ],
       name: "B",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [

@@ -5,9 +5,10 @@ ScopeManager {
   variables: Array [
     Variable$1 {
       defs: Array [],
-      identifiers: Array [],
       name: "arguments",
       references: Array [],
+      isValueVariable: true,
+      isTypeVariable: true,
     },
   ],
   scopes: Array [

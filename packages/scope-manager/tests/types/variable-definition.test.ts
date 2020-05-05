@@ -16,11 +16,10 @@ describe('variable definition', () => {
               node: TSTypeAliasDeclaration$1,
             },
           ],
-          identifiers: Array [
-            Identifier<"TypeDecl">,
-          ],
           name: "TypeDecl",
           references: Array [],
+          isValueVariable: false,
+          isTypeVariable: true,
         },
       ]
     `);
@@ -42,11 +41,10 @@ describe('variable definition', () => {
               node: TSInterfaceDeclaration$1,
             },
           ],
-          identifiers: Array [
-            Identifier<"InterfaceDecl">,
-          ],
           name: "InterfaceDecl",
           references: Array [],
+          isValueVariable: false,
+          isTypeVariable: true,
         },
       ]
     `);
@@ -66,11 +64,10 @@ describe('variable definition', () => {
               node: TSTypeParameter$1,
             },
           ],
-          identifiers: Array [
-            Identifier<"TypeParam">,
-          ],
           name: "TypeParam",
           references: Array [],
+          isValueVariable: false,
+          isTypeVariable: true,
         },
       ]
     `);
@@ -94,9 +91,6 @@ describe('variable definition', () => {
               node: TSTypeParameter$1,
             },
           ],
-          identifiers: Array [
-            Identifier<"Inferred">,
-          ],
           name: "Inferred",
           references: Array [
             Reference$3 {
@@ -105,6 +99,8 @@ describe('variable definition', () => {
               resolved: Variable$3,
             },
           ],
+          isValueVariable: false,
+          isTypeVariable: true,
         },
       ]
     `);

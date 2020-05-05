@@ -10,9 +10,6 @@ ScopeManager {
           node: VariableDeclarator$1,
         },
       ],
-      identifiers: Array [
-        Identifier<"i">,
-      ],
       name: "i",
       references: Array [
         Reference$1 {
@@ -28,6 +25,8 @@ ScopeManager {
           resolved: Variable$1,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
     Variable$2 {
       defs: Array [
@@ -35,9 +34,6 @@ ScopeManager {
           name: Identifier<"j">,
           node: VariableDeclarator$3,
         },
-      ],
-      identifiers: Array [
-        Identifier<"j">,
       ],
       name: "j",
       references: Array [
@@ -49,6 +45,8 @@ ScopeManager {
           writeExpr: Literal$4,
         },
       ],
+      isValueVariable: true,
+      isTypeVariable: false,
     },
   ],
   scopes: Array [
